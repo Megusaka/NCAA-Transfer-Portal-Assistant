@@ -1,6 +1,62 @@
+from dataclasses import dataclass
+
 import mysql.connector
 from mysql.connector import Error
 from flask import Flask
+
+@dataclass
+class PlayerIdentifyingInformation:
+    pii_id: int
+    first_name: str
+    last_name: str
+    school: str
+
+@dataclass
+class CareerStatistics:
+    player_id: int
+    sets_played: int
+    kills: int
+    kills_per_set: float
+    errs: int
+    total_attempts: int
+    attack_percentage: float
+    assits: int
+    assists_per_set: float
+    serve_aces: int
+    serve_errors: int
+    serve_aces_per_set: float
+    reception_errors: int
+    digs: int
+    digs_per_set: float
+    block_solos: int
+    block_assists: int
+    blk: int
+    blk_per_s: float
+    block_errors: int
+    ball_handling_errors: int
+    points: int
+    pii_id: int
+
+@dataclass
+class GameStatistics:
+    game_date: str
+    opponent: str
+    sets_played: int
+    kills: int
+    errs: int
+    total_attempts: int
+    attack_percentage: float
+    assists: int
+    serve_aces: int
+    serve_errors: int
+    reception_errors: int
+    digs: int
+    block_solos: int
+    block_assists: int
+    block_errors: int
+    ball_handling_errors: int
+    total_blocks: int
+    pii_id: int
 
 def get_db_connection():
     try:
