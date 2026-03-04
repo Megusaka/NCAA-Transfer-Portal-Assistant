@@ -39,10 +39,15 @@ for p in players:
     eligibility_tag = p.select_one(".sidearm-roster-player-academic-year") 
     position_tag = p.select_one(".sidearm-roster-player-position-long-short")
     height_tag = p.select_one(".sidearm-roster-player-height")
+    
     if name_tag:
         name = name_tag.get_text(strip=True)
-        hometown = hometown_tag.get_text(strip=True) if hometown_tag else "N/A"
-        eligibility = eligibility_tag.get_text(strip=True) if eligibility_tag else "N/A"
-        position = position_tag.get_text(strip=True) if position_tag else "N/A"
-        height = height_tag.get_text(strip=True) if height_tag else "N/A"
-        print(name + " | " + hometown + " | " + eligibility + " | " + position + " | " + height)
+        name = name.lstrip("0123456789 ").strip()
+    else:
+        name = "N\\A"
+
+    hometown = hometown_tag.get_text(strip=True) if hometown_tag else "N\\A"
+    eligibility = eligibility_tag.get_text(strip=True) if eligibility_tag else "N\\A"   
+    position = position_tag.get_text(strip=True) if position_tag else "N\\A"
+    height = height_tag.get_text(strip=True) if height_tag else "N\\A"
+    print(name + " | " + hometown + " | " + eligibility + " | " + position + " | " + height)
