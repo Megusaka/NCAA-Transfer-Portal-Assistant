@@ -32,31 +32,31 @@ def execute_insert(query, params):
     else:
         print("Failed to connect to the database.")
     
-def insert_into_player_identifying_information(pii_id, first_name, last_name, school):
+def insert_into_player_identifying_information(first_name, last_name, school):
     query = """
-    INSERT INTO player_identifying_information (pii_id, first_name, last_name, school)
-    VALUES (%s, %s, %s, %s)
+    INSERT INTO player_identifying_information (first_name, last_name, school)
+    VALUES (%s, %s, %s)
     """
-    params = (pii_id, first_name, last_name, school)
+    params = (first_name, last_name, school)
     execute_insert(query, params)
     return print("Player identifying information inserted successfully")
 
-def insert_into_career_statistics(player_id, sets_played, kills, kills_per_set, 
+def insert_into_career_statistics(sets_played, kills, kills_per_set, 
 errs, total_attempts, attack_percentage, assits, 
 assists_per_set, serve_aces, serve_errors, serve_aces_per_set, 
 reception_errors, digs, digs_per_set, block_solos, block_assists, 
 blk, blk_per_s, block_errors, ball_handling_errors, points, pii_id):
     query = """
-    INSERT INTO career_statistics (player_id, sets_played, kills, kills_per_set, 
+    INSERT INTO career_statistics (sets_played, kills, kills_per_set, 
     errs, total_attempts, attack_percentage, assits, 
     assists_per_set, serve_aces, serve_errors, serve_aces_per_set, 
     reception_errors, digs, digs_per_set, block_solos, block_assists, 
     blk, blk_per_s, block_errors, ball_handling_errors, points, piid_id)
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 
+    VALUES (%s, %s, %s, %s, %s, %s, %s, 
     %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
 
-    params = (player_id, sets_played, kills, kills_per_set, errs, total_attempts, attack_percentage, assits,
+    params = (sets_played, kills, kills_per_set, errs, total_attempts, attack_percentage, assits,
               assists_per_set, serve_aces, serve_errors, serve_aces_per_set, reception_errors, digs,
               digs_per_set, block_solos, block_assists, blk, blk_per_s, block_errors,
               ball_handling_errors, points, pii_id)
