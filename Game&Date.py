@@ -58,28 +58,46 @@ if db is not None:
 #the f-string is used to format the output
 #the iterrows() method is used to iterate over the rows of the DataFrame
 #the for _ is used to ignore the index value returned by iterrows()
-for _, row in schedule.iterrows():
-   print(f"{row['Date']} — {row['Opponent']} — {row['W/L']} - {row['SP']} - {row['K']} - {row['E']} - {row['TA']} - {row['PCT']} - {row['AST']} - {row['SA']} - {row['SE']} - {row['RE']} - {row['DIG']} - {row['BS']} - {row['BA']} - {row['BE']}  - {row['BHE']} - {row['TB']}")
-   db.insert_game_statistics(DatabaseConnector.GameStatistics(
-       game_date=row['Date'],
-       opponent=row['Opponent'],
-       sets_played=row['SP'],
-       kills=row['K'],
-       errs=row['E'],
-       total_attempts=row['TA'],
-       attack_percentage=row['PCT'],
-       assists=row['AST'],
-       serve_aces=row['SA'],
-       serve_errors=row['SE'],
-       reception_errors=row['RE'],
-       digs=row['DIG'],
-       block_solos=row['BS'],
-       block_assists=row['BA'],
-       block_errors=row['BE'],
-       ball_handling_errors=row['BHE'],
-       total_blocks=row['TB'],
-       pii_id=None
-   ))
+#for _, row in schedule.iterrows():
+#   print(f"{row['Date']} — {row['Opponent']} — {row['W/L']} - {row['SP']} - {row['K']} - {row['E']} - {row['TA']} - {row['PCT']} - {row['AST']} - {row['SA']} - {row['SE']} - {row['RE']} - {row['DIG']} - {row['BS']} - {row['BA']} - {row['BE']}  - {row['BHE']} - {row['TB']}")
+
+
+def print_and_insert_schedule(schedule, db):
+    for _, row in schedule.iterrows():
+        print(
+            f"{row['Date']} — {row['Opponent']} — {row['W/L']} - "
+            f"{row['SP']} - {row['K']} - {row['E']} - {row['TA']} - "
+            f"{row['PCT']} - {row['AST']} - {row['SA']} - {row['SE']} - "
+            f"{row['RE']} - {row['DIG']} - {row['BS']} - {row['BA']} - "
+            f"{row['BE']} - {row['BHE']} - {row['TB']}"
+        )
+
+        db.insert_schedule(
+            row['Date'], row['Opponent'], row['W/L'], row['SP'], row['K'], row['E'],
+            row['TA'], row['PCT'], row['AST'], row['SA'], row['SE'], row['RE'],
+            row['DIG'], row['BS'], row['BA'], row['BE'], row['BHE'], row['TB']
+        )
+
+db.insert_game_statistics(DatabaseConnector.GameStatistics(
+    game_date=row['Date'],
+    opponent=row['Opponent'],
+    sets_played=row['SP'],
+    kills=row['K'],
+    errs=row['E'],
+    total_attempts=row['TA'],
+    attack_percentage=row['PCT'],
+    assists=row['AST'],
+    serve_aces=row['SA'],
+    serve_errors=row['SE'],
+    reception_errors=row['RE'],
+    digs=row['DIG'],
+    block_solos=row['BS'],
+    block_assists=row['BA'],
+    block_errors=row['BE'],
+    ball_handling_errors=row['BHE'],
+    total_blocks=row['TB'],
+    pii_id=None
+))
 db.close()
 #player_career_stat = tables[3] # table  is the player stats table
 
