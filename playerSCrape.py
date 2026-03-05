@@ -1,4 +1,4 @@
-# my reference for this code is the beautiful soup documentation
+""" # my reference for this code is the beautiful soup documentation
 # NEED TO RUN IN PYTHON 3.13 Verson
 # https://www.crummy.com/software/BeautifulSoup/bs4/doc/
 # https://scrapingant.com/blog/beautifulsoup-cheatsheet
@@ -76,4 +76,4 @@ for p in players:
 
     db.player_identifying_information(first_name, last_name, hometown, eligibility, position, height)
 
-db.close()
+db.close() """
