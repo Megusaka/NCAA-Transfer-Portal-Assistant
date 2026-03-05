@@ -1,11 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>NCAA Volleyball Transfer Portal Assistant</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-    <h1>NCAA Volleyball Transfer Portal Assistant</h1>
+{% block content %}
 
     <h2>Search Player</h2>
     <form method="POST">
@@ -39,6 +34,4 @@
 </tr>
 {% endfor %}
 </table>
-
-</body>
-</html>
+{% endblock %}
