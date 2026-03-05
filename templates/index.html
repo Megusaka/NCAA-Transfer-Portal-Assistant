@@ -20,23 +20,25 @@
 
         <button type="submit">Search</button>
     </form>
-   
+    
     <hr>
 
     <h2>Search History</h2>
 
-    {% if players %}
-        <ul>
-        {% for player in players %}
-            <a href="{{ url_for('player_detail', pii_id=player[0]) }}">
-                {{ player[1] }} {{ player[2] }} — {{ player[3] }}   <!--player.first_name if change to dictionary-->
-            </a>
-        {% endfor %}
-   
-        </ul>
-    {% else %}
-        <p>No players searched yet.</p>
-    {% endif %}
+<table>
+<tr>
+    <th>Name</th><th>School</th><th>Sets Played</th><th>Kills</th><th>Assists Per Set</th>
+</tr>
+{% for player in all_data %}
+<tr>
+    <td>{{ player.identifying.first_name }} {{ player.identifying.last_name }}</td>
+    <td>{{ player.identifying.school }}</td>
+    <td>{{ player.career.sets_played or '' }}</td>
+    <td>{{ player.career.kills or '' }}</td>
+    <td>{{ player.career.assists_per_set or '' }}</td>
+</tr>
+{% endfor %}
+</table>
 
 </body>
 </html>

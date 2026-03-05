@@ -1,7 +1,8 @@
 import pandas as pd
 from datetime import datetime
 import requests
-#from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup
+from DatabaseConnection import DatabaseConnector
 
 #date time documentation 
 #https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Timestamp.strftime.html
@@ -47,20 +48,21 @@ schedule = tables[7]   # table 7 is the schedule table
 # Clean column names (Sidearm sometimes adds spaces)
 schedule.columns = schedule.columns.str.strip()
 print(schedule.columns)
+
+
+db = DatabaseConnector("game_statistics.db")
+db.connect()
+
 # Print only Date and Opponent columns
 #the f-string is used to format the output
 #the iterrows() method is used to iterate over the rows of the DataFrame
 #the for _ is used to ignore the index value returned by iterrows()
 for _, row in schedule.iterrows():
-   print(f"{row['Date']} — {row['Opponent']}")
+   print(f"{row['Date']} — {row['Opponent']} — {row['W/L']} - {row['SP']} - {row['K']} - {row['E']} - {row['TA']} - {row['PCT']} - {row['AST']} - {row['SA']} - {row['SE']} - {row['RE']} - {row['DIG']} - {row['BS']} - {row['BA']} - {row['BE']}  - {row['BHE']} - {row['TB']}")
 
 
-#player_career_stat = tables[3] # table  is the player stats table
-
-#player_career_stat.columns = player_career_stat.columns.str.strip()
-#print(player_career_stat.columns)
-#for _, row in player_career_stat.iterrows():
-#    print(f"{row['Player']} — Matches Played: {row['MP']}")
+db.insert_schedule(row['Date'], row['Opponent'], row['W/L'], row['SP'], row['K'], row['E'], row['TA'], row['PCT'], row['AST'], row['SA'], row['SE'], row['RE'], row['DIG'], row['BS'], row['BA'], row['BE'],  row['BHE'], row['TB'])
+db.close()
 
 
 
