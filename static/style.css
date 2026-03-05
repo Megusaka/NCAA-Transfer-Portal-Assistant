@@ -11,8 +11,6 @@ body{
     text-align: center;
 }
 
-/* PAGE TITLE */
-
 .title{
     text-align: center;
     font-size: 36px;
@@ -73,7 +71,6 @@ input{
     text-decoration: underline;
 }
 
-/* ---------- SEARCH FORM ---------- */
 
 form{
     display: flex;
@@ -106,8 +103,6 @@ button{
 button:hover{
     background-color: #1c60b8;
 }
-
-/* ---------- TABLE ---------- */
 
 table{
     width: 100%;
