@@ -4,7 +4,7 @@
 # https://scrapingant.com/blog/beautifulsoup-cheatsheet
 from bs4 import BeautifulSoup
 import requests
-from database_connector import DatabaseConnector
+import DatabaseConnection as DatabaseConnector
 
 #hard coding the url of the roster page 
 #getting the roster page and requsting the content of the page 
@@ -46,8 +46,8 @@ height = soup.select(".sidearm-roster-player-height")
 
 players = soup.select(".sidearm-roster-player")
 
-db = DatabaseConnector("player_identifying_information.db")
-db.connect()
+db = DatabaseConnector.get_db_connection()
+
 
 for p in players:
     name_tag = p.select_one(".sidearm-roster-player-name")
@@ -68,6 +68,15 @@ for p in players:
     height = height_tag.get_text(strip=True) if height_tag else "N\\A"
     print(name + " | " + hometown + " | " + eligibility + " | " + position + " | " + height)
 
-    db.player_identifying_information(name, hometown, eligibility, position, height)
+    name_parts = name.split(" ", 1)
+    first_name = name_parts[0]
+    last_name = name_parts[1]
+
+    DatabaseConnector.insert_into_player_identifying_information(DatabaseConnector.PlayerIdentifyingInformation(
+        pii_id=None, 
+        first_name=first_name, 
+        last_name=last_name, 
+        school=hometown
+        ))
 
 db.close()
