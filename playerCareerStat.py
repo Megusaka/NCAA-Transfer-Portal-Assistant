@@ -34,18 +34,37 @@ def flatten(df):
 table2 = flatten(table2)
 table4 = flatten(table4)
 
+combinedTable = table4 + table2
+
 print("=== TABLE 2 (DEFENSIVE) COLUMNS ===")
 print(table2.columns)
 
-print("\n=== TABLE 2 (DEFENSIVE) ROWS ===")
-for _, row in table2.iterrows():
-    print(row.to_string())
-    print()
+# print("\n=== TABLE 2 (DEFENSIVE) ROWS ===")
+# for _, row in table2.iterrows():
+#     print(row.to_string())
+#     print()
 
 print("=== TABLE 4 (OFFENSIVE) COLUMNS ===")
 print(table4.columns)
 
-print("\n=== TABLE 4 (OFFENSIVE) ROWS ===")
-for _, row in table4.iterrows():
-    print(row.to_string())
-    print()
+# print("\n=== TABLE 4 (OFFENSIVE) ROWS ===")
+# for _, row in table4.iterrows():
+#     print(row.to_string())
+#     print()
+
+print("=== COMBINED TABLE 2 + TABLE 4 COLUMNS ===")
+print(combinedTable.columns)
+
+# print("\n=== COMBINED TABLE 2 + TABLE 4 ROWS ===")
+# for _, row in combinedTable.iterrows():
+#     print(row.to_string())
+#     DatabaseConnector.insert_career_statistics(DatabaseConnector.CareerStatistics(
+#         player_name=row['PLAYER'],
+#         position=row['POS'],
+#         sets_played=row['SET_DEF'],
+#         kills=row['K_OFF'],
+#         assists_per_set=row['AST_OFF'],
+#         blocks_per_set=row['BLK_DEF'],
+#         digs_per_set=row['DIG_DEF'],
+#         aces_per_set=row['ACE_OFF']
+#     ))

@@ -72,7 +72,7 @@ def print_and_insert_schedule(schedule, db):
             f"{row['BE']} - {row['BHE']} - {row['TB']}"
         )
 
-        db.insert_game_statistics(DatabaseConnector.GameStatistics(
+        DatabaseConnector.insert_game_statistics(DatabaseConnector.GameStatistics(
             game_date=row['Date'],
             opponent=row['Opponent'],
             sets_played=row['SP'],
@@ -92,6 +92,9 @@ def print_and_insert_schedule(schedule, db):
             total_blocks=row['TB'],
             pii_id=None
         ))
+
+print_and_insert_schedule(schedule, db)
+
 db.close()
 #player_career_stat = tables[3] # table  is the player stats table
 
