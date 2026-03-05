@@ -28,7 +28,7 @@ def index():
 
 
     all_data = []
-    players = db.get_all_players()
+    players = db.get_all_player_data()
     
     for player in players:
         pii_id = player["pii_id"]
@@ -54,11 +54,11 @@ def index():
 @app.route("/player/<int:pii_id>")
 def player_detail(pii_id):
 
-    player = db.get_all_player_data(pii_id)
+    career_stats = db.get_career_statistics_by_pii_id(pii_id)
 
-    if not player:
+    if not career_stats:
          return redirect(url_for("index"))
-    return render_template("player_detail.html", player=player["iden"])
+    return render_template("player_detail.html", career = career_stats)
 
 
 if __name__ == "__main__":
