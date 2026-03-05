@@ -72,32 +72,26 @@ def print_and_insert_schedule(schedule, db):
             f"{row['BE']} - {row['BHE']} - {row['TB']}"
         )
 
-        db.insert_schedule(
-            row['Date'], row['Opponent'], row['W/L'], row['SP'], row['K'], row['E'],
-            row['TA'], row['PCT'], row['AST'], row['SA'], row['SE'], row['RE'],
-            row['DIG'], row['BS'], row['BA'], row['BE'], row['BHE'], row['TB']
-        )
-
-db.insert_game_statistics(DatabaseConnector.GameStatistics(
-    game_date=row['Date'],
-    opponent=row['Opponent'],
-    sets_played=row['SP'],
-    kills=row['K'],
-    errs=row['E'],
-    total_attempts=row['TA'],
-    attack_percentage=row['PCT'],
-    assists=row['AST'],
-    serve_aces=row['SA'],
-    serve_errors=row['SE'],
-    reception_errors=row['RE'],
-    digs=row['DIG'],
-    block_solos=row['BS'],
-    block_assists=row['BA'],
-    block_errors=row['BE'],
-    ball_handling_errors=row['BHE'],
-    total_blocks=row['TB'],
-    pii_id=None
-))
+        db.insert_game_statistics(DatabaseConnector.GameStatistics(
+            game_date=row['Date'],
+            opponent=row['Opponent'],
+            sets_played=row['SP'],
+            kills=row['K'],
+            errs=row['E'],
+            total_attempts=row['TA'],
+            attack_percentage=row['PCT'],
+            assists=row['AST'],
+            serve_aces=row['SA'],
+            serve_errors=row['SE'],
+            reception_errors=row['RE'],
+            digs=row['DIG'],
+            block_solos=row['BS'],
+            block_assists=row['BA'],
+            block_errors=row['BE'],
+            ball_handling_errors=row['BHE'],
+            total_blocks=row['TB'],
+            pii_id=None
+        ))
 db.close()
 #player_career_stat = tables[3] # table  is the player stats table
 
