@@ -58,9 +58,25 @@ if db is not None:
 #the f-string is used to format the output
 #the iterrows() method is used to iterate over the rows of the DataFrame
 #the for _ is used to ignore the index value returned by iterrows()
-for _, row in schedule.iterrows():
-   print(f"{row['Date']} — {row['Opponent']} — {row['W/L']} - {row['SP']} - {row['K']} - {row['E']} - {row['TA']} - {row['PCT']} - {row['AST']} - {row['SA']} - {row['SE']} - {row['RE']} - {row['DIG']} - {row['BS']} - {row['BA']} - {row['BE']}  - {row['BHE']} - {row['TB']}")
+#for _, row in schedule.iterrows():
+#   print(f"{row['Date']} — {row['Opponent']} — {row['W/L']} - {row['SP']} - {row['K']} - {row['E']} - {row['TA']} - {row['PCT']} - {row['AST']} - {row['SA']} - {row['SE']} - {row['RE']} - {row['DIG']} - {row['BS']} - {row['BA']} - {row['BE']}  - {row['BHE']} - {row['TB']}")
 
+
+def print_and_insert_schedule(schedule, db):
+    for _, row in schedule.iterrows():
+        print(
+            f"{row['Date']} — {row['Opponent']} — {row['W/L']} - "
+            f"{row['SP']} - {row['K']} - {row['E']} - {row['TA']} - "
+            f"{row['PCT']} - {row['AST']} - {row['SA']} - {row['SE']} - "
+            f"{row['RE']} - {row['DIG']} - {row['BS']} - {row['BA']} - "
+            f"{row['BE']} - {row['BHE']} - {row['TB']}"
+        )
+
+        db.insert_schedule(
+            row['Date'], row['Opponent'], row['W/L'], row['SP'], row['K'], row['E'],
+            row['TA'], row['PCT'], row['AST'], row['SA'], row['SE'], row['RE'],
+            row['DIG'], row['BS'], row['BA'], row['BE'], row['BHE'], row['TB']
+        )
 
 db.insert_game_statistics(DatabaseConnector.GameStatistics(
     game_date=row['Date'],
