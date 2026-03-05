@@ -3,6 +3,7 @@
 
 import requests
 from bs4 import BeautifulSoup
+from database_connector import DatabaseConnector
 
 #hard coding the url of the roster page 
 #getting the roster page and requsting the content of the page 
@@ -33,6 +34,10 @@ height = soup.select("span.sidearm-roster-player-height")
 # we can use the select_one method to get the first div with that class 
 # the get_text method to get the text of that div which is the name of the player
 #allowing the name to be printed stripping any extra whitespace
+
+db = DatabaseConnector("player_identifying_information.db")
+db.connect()
+
 for p in players:
     name_tag = p.select_one(".sidearm-roster-player-name")
     hometown_tag = p.select_one(".sidearm-roster-player-hometown")
@@ -51,3 +56,7 @@ for p in players:
     position = position_tag.get_text(strip=True) if position_tag else "N\\A"
     height = height_tag.get_text(strip=True) if height_tag else "N\\A"
     print(name + " | " + hometown + " | " + eligibility + " | " + position + " | " + height)
+
+    db.player_identifying_information(name, hometown, eligibility, position, height)
+
+db.close()
