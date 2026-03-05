@@ -4,6 +4,10 @@ CREATE TABLE IF NOT EXISTS player_identifying_information (
 	pii_id INT AUTO_INCREMENT PRIMARY KEY,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
+    Hometown VARCHAR(50) NOT NULL,
+    Eligibility VARCHAR(20) NOT NULL,
+    Position VARCHAR(20) NOT NULL,
+    Height FLOAT NOT NULL,
     school VARCHAR(50) NOT NULL
 
 );
@@ -40,6 +44,7 @@ CREATE TABLE IF NOT EXISTS game_statistics (
 	game_id INT AUTO_INCREMENT PRIMARY KEY,
     game_date DATE NOT NULL,
     opponent VARCHAR(50) NOT NULL,
+    W/L VARCHAR(1) NOT NULL,
     sets_played INT NOT NULL,
 	kills INT NOT NULL,
     errs INT NOT NULL, -- Errors
