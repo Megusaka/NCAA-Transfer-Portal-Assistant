@@ -2,7 +2,7 @@ import pandas as pd
 from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
-from database_connector import DatabaseConnector
+from DatabaseConnection import DatabaseConnector
 
 #date time documentation 
 #https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Timestamp.strftime.html
