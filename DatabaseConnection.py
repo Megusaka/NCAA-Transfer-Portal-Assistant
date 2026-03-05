@@ -97,7 +97,7 @@ def execute_read(query, params):
     connection = get_db_connection()
     if connection is not None:
         try:
-            cursor = connection.cursor()
+            cursor = connection.cursor(dictionary=True)
             cursor.execute(query, params)
             results = cursor.fetchall()
             return results
@@ -119,7 +119,7 @@ def get_player_id_by_information(first_name, last_name, school):
     params = (first_name, last_name, school)
     results = execute_read(query, params)
     if results:
-        return results[0][0]
+        return results[0]["pii_id"]
     else:
         print("No player found with the given information.")
         return None
@@ -226,6 +226,18 @@ def delete_game_statistics_by_player_id_and_game_date(pii_id, game_date):
     query = "DELETE FROM game_statistics WHERE piid_id = %s AND game_date = %s"
     params = (pii_id, game_date)
     execute_delete(query, params)
+
+
+def get_all_player_data():
+    query = "SELECT * FROM player_identifying_information"
+    return execute_read(query, ())
+
+def get_career_statistics_by_pii_id(pii_id):
+    query = "SELECT * FROM career_statistics WHERE pii_id = %s"
+    return execute_read(query, (pii_id,))
+
+
+
     
 conn = get_db_connection()
 if conn is not None:

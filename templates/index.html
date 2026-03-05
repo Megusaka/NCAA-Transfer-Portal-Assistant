@@ -20,23 +20,74 @@
 
         <button type="submit">Search</button>
     </form>
-   
+    
     <hr>
 
     <h2>Search History</h2>
 
-    {% if players %}
-        <ul>
-        {% for player in players %}
-            <a href="{{ url_for('player_detail', pii_id=player[0]) }}">
-                {{ player[1] }} {{ player[2] }} — {{ player[3] }}   <!--player.first_name if change to dictionary-->
-            </a>
+    <table>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>School</th>
+            <th>Sets Played</th>
+            <th>Kills</th>
+            <th>Kills per Set</th>
+            <th>Errors</th>
+            <th>Total Attempts</th>
+            <th>Attack %</th>
+            <th>Assists</th>
+            <th>Assists per Set</th>
+            <th>Serve Aces</th>
+            <th>Serve Errors</th>
+            <th>Serve Aces per Set</th>
+            <th>Reception Errors</th>
+            <th>Digs</th>
+            <th>Digs per Set</th>
+            <th>Block Solos</th>
+            <th>Block Assists</th>
+            <th>Block Total</th>
+            <th>Block per Set</th>
+            <th>Block Errors</th>
+            <th>Ball Handling Errors</th>
+            <th>Points</th>
+        </tr>
+
+        {% for player in full_data_list %}
+        <tr>
+
+            <td>{{ player.identifying.first_name }}</td>
+            <td>{{ player.identifying.last_name }}</td>
+            <td>{{ player.identifying.school }}</td>
+
+            {% if player.career %}
+                <td>{{ player.career.sets_played }}</td>
+                <td>{{ player.career.kills }}</td>
+                <td>{{ player.career.kills_per_set }}</td>
+                <td>{{ player.career.errs }}</td>
+                <td>{{ player.career.total_attempts }}</td>
+                <td>{{ player.career.attack_percentage }}</td>
+                <td>{{ player.career.assits }}</td>
+                <td>{{ player.career.assists_per_set }}</td>
+                <td>{{ player.career.serve_aces }}</td>
+                <td>{{ player.career.serve_errors }}</td>
+                <td>{{ player.career.serve_aces_per_set }}</td>
+                <td>{{ player.career.reception_errors }}</td>
+                <td>{{ player.career.digs }}</td>
+                <td>{{ player.career.digs_per_set }}</td>
+                <td>{{ player.career.block_solos }}</td>
+                <td>{{ player.career.block_assists }}</td>
+                <td>{{ player.career.blk }}</td>
+                <td>{{ player.career.blk_per_s }}</td>
+                <td>{{ player.career.block_errors }}</td>
+                <td>{{ player.career.ball_handling_errors }}</td>
+                <td>{{ player.career.points }}</td>
+            {% else %}
+                <td colspan="22">No career stats yet</td>
+            {% endif %}
+        </tr>
         {% endfor %}
-   
-        </ul>
-    {% else %}
-        <p>No players searched yet.</p>
-    {% endif %}
+    </table>
 
 </body>
 </html>
