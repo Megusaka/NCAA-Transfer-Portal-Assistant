@@ -90,7 +90,7 @@ def print_and_insert_schedule(schedule, db):
             block_errors=row['BE'],
             ball_handling_errors=row['BHE'],
             total_blocks=row['TB'],
-            pii_id=None
+            pii_id=1 # Placeholder for now, eventually will connect player to game. doubles as more data to show test vis. with
         ))
 
 print_and_insert_schedule(schedule, db)
