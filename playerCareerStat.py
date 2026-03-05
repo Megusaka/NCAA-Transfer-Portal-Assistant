@@ -14,13 +14,11 @@ def get_valid_url():
 
 tables = pd.read_html(get_valid_url())
 
-print(f"Found {len(tables)} tables\n")
-
-# Table 2 = Defensive
-table2 = tables[2]
-
-# Table 4 = Offensive
+# Table 4 = Defensive
 table4 = tables[4]
+
+# Table 3 = Offensive
+table3 = tables[3]
 
 def flatten(df):
     if isinstance(df.columns, pd.MultiIndex):
@@ -31,11 +29,11 @@ def flatten(df):
         df.columns = df.columns.map(str)
     return df
 
-table2 = flatten(table2)
+table3 = flatten(table3)
 table4 = flatten(table4)
 
 def pretty_print_table(df, title):
-    print(f"\n {title}\n")
+    print(f"\n {title} \n")
 
     for _, row in df.iterrows():
         player = str(row.iloc[0]).strip()
@@ -51,5 +49,5 @@ def pretty_print_table(df, title):
 
         print()
 
-pretty_print_table(table2, "TABLE 2 (DEFENSIVE)")
-pretty_print_table(table4, "TABLE 4 (OFFENSIVE)")
+pretty_print_table(table4, "TABLE 2 (DEFENSIVE)")
+pretty_print_table(table3, "TABLE 3 (OFFENSIVE)")
