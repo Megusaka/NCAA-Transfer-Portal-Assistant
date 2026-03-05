@@ -60,6 +60,23 @@ def player_detail(pii_id):
          return redirect(url_for("index"))
     return render_template("player_detail.html", career = career_stats)
 
+@app.route("/favorites")
+def favorites():
+    # currently all players until favorites implemented in db
+    # eventually filter WHERE favorite = TRUE
+    all_data = []
+    players = db.get_all_player_data()
+    for player in players:
+        pii_id = player["pii_id"]
+        career_stats = db.get_career_statistics_by_pii_id(pii_id)
+        career_dict = career_stats[0] if career_stats else {}
+        all_data.append({
+            "identifying": player,
+            "career": career_dict
+        })
+
+    return render_template("favorites.html", all_data=all_data)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
