@@ -4,6 +4,8 @@
 # https://scrapingant.com/blog/beautifulsoup-cheatsheet
 from bs4 import BeautifulSoup
 import requests
+import DatabaseConnection from DatabaseConnection
+
 
 #hard coding the url of the roster page 
 #getting the roster page and requsting the content of the page 
@@ -46,6 +48,10 @@ def scrape_player(first_name, last_name, school):
 
     full_name_search = f"{first_name} {last_name}".lower()
 
+    
+    db = DatabaseConnector("player_identifying_information.db")
+    db.connect()
+
     for p in players:
         name_tag = p.select_one(".sidearm-roster-player-name")
         hometown_tag = p.select_one(".sidearm-roster-player-hometown")
@@ -65,8 +71,9 @@ def scrape_player(first_name, last_name, school):
         height = height_tag.get_text(strip=True) if height_tag else "N\\A"
         print(name + " | " + hometown + " | " + eligibility + " | " + position + " | " + height)
 
-        scraped_name = name.lower()
-        if scraped_name == full_name_search:
-            return {
-                
-            }
+        if name.lower() == full_name_search:
+            print(f"Found player: {name}")
+            db.player_identifying_information(name, hometown, eligibility, position, height)
+            break  
+    else:
+        print(f"Player {full_name_search} not found in the roster.")

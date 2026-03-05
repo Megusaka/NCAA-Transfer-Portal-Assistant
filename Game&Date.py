@@ -1,7 +1,8 @@
 import pandas as pd
 from datetime import datetime
 import requests
-#from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup
+import DatabaseConnection from DatabaseConnection
 
 #date time documentation 
 #https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Timestamp.strftime.html
@@ -47,12 +48,18 @@ schedule = tables[7]   # table 7 is the schedule table
 # Clean column names (Sidearm sometimes adds spaces)
 schedule.columns = schedule.columns.str.strip()
 print(schedule.columns)
+
+db = DatabaseConnector("player_identifying_information.db")
+db.connect()
 # Print only Date and Opponent columns
 #the f-string is used to format the output
 #the iterrows() method is used to iterate over the rows of the DataFrame
 #the for _ is used to ignore the index value returned by iterrows()
 for _, row in schedule.iterrows():
    print(f"{row['Date']} — {row['Opponent']}")
+
+
+
 
 
 #player_career_stat = tables[3] # table  is the player stats table
