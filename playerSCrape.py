@@ -4,7 +4,7 @@
 # https://scrapingant.com/blog/beautifulsoup-cheatsheet
 from bs4 import BeautifulSoup
 import requests
-from database_connector import DatabaseConnector
+import DatabaseConnection as DatabaseConnector
 
 from bs4 import BeautifulSoup
 import requests
@@ -26,8 +26,8 @@ school = title_text.split("-")[-1].replace("Athletics", "").strip()
 
 players = soup.select(".sidearm-roster-player")
 
-db = DatabaseConnector("player_identifying_information.db")
-db.connect()
+db = DatabaseConnector.get_db_connection()
+
 
 for p in players:
     name_tag = p.select_one(".sidearm-roster-player-name")
@@ -44,13 +44,15 @@ for p in players:
 
     first_name, last_name = split_name(name)
 
-    hometown = hometown_tag.get_text(strip=True) if hometown_tag else "N/A"
-    eligibility = eligibility_tag.get_text(strip=True) if eligibility_tag else "N/A"
-    position = position_tag.get_text(strip=True) if position_tag else "N/A"
-    height = height_tag.get_text(strip=True) if height_tag else "N/A"
+    name_parts = name.split(" ", 1)
+    first_name = name_parts[0]
+    last_name = name_parts[1]
 
-    print(f"{first_name} {last_name} | {school} | {hometown} | {eligibility} | {position} | {height}")
-
-    db.player_identifying_information(first_name, last_name, hometown, eligibility, position, height)
+    DatabaseConnector.insert_into_player_identifying_information(DatabaseConnector.PlayerIdentifyingInformation(
+        pii_id=None, 
+        first_name=first_name, 
+        last_name=last_name, 
+        school=school
+        ))
 
 db.close()
