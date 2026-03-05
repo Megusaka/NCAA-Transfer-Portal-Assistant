@@ -20,11 +20,13 @@ def index():
         first, last = scraped_data["name"].split(" ", 1)
 
         if scraped_data:
-                db.insert_into_player_identifying_information(
-                    first, last,
-                    scraped_data["school"]
-
-                )
+                p = db.PlayerIdentifyingInformation(
+                      first_name=first,
+                      last_name=last,
+                      school=scraped_data["school"]
+                      )
+                
+                db.insert_into_player_identifying_information(p)
 
         return redirect(url_for("index")) #allows for url change
 

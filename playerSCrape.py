@@ -11,9 +11,7 @@ def split_name(full_name):
         return parts[0], ""
     return parts[0], " ".join(parts[1:])
 
-def scrape_player():
-    target_first, target_last, school = get_user_name_and_school()
-
+def scrape_player(first_name, last_name, school):
     if target_first is None:
         print("No name entered.")
         return None

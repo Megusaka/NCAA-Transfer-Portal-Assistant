@@ -1,8 +1,9 @@
 import pandas as pd
 from datetime import datetime
 import requests
-from app import get_user_name_and_school
-
+from app import playerScrape
+from bs4 import BeautifulSoup
+import DatabaseConnection as DatabaseConnector
 
 def get_valid_url():
     current_year = datetime.now().year
@@ -34,7 +35,7 @@ def split_name(full):
 
 
 def scrape_single_player_stats():
-    target_first, target_last, school = get_user_name_and_school()
+    target_first, target_last, school = scraper_player()
 
     if target_first is None:
         return []
