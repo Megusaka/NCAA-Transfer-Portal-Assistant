@@ -44,7 +44,7 @@ def scrape_player(first_name, last_name, school):
 
     players = soup.select(".sidearm-roster-player")
 
-    full_name_search = f"{first_name} {last_name}".lower
+    full_name_search = f"{first_name} {last_name}".lower()
 
     for p in players:
         name_tag = p.select_one(".sidearm-roster-player-name")
@@ -65,5 +65,8 @@ def scrape_player(first_name, last_name, school):
         height = height_tag.get_text(strip=True) if height_tag else "N\\A"
         print(name + " | " + hometown + " | " + eligibility + " | " + position + " | " + height)
 
-        scraped_name = name.lower
-        print(scraped_name)
+        scraped_name = name.lower()
+        if scraped_name == full_name_search:
+            return {
+                
+            }

@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
-import uuid
 import DatabaseConnection as db
+import playerSCrape as playerScrape
 
 app = Flask(__name__)
 
@@ -11,37 +11,54 @@ def index():
         last_name = request.form.get("last_name")
         school = request.form.get("school")
 
-        if first_name and last_name and school:
-            pii_id = str(uuid.uuid4())
+        if not first_name or not last_name or not school:
+                return redirect(url_for("index"))
+#will add to zoe's write to database file if needed, here just for current access, needs check for redundant add with get_player_id_by_info
+        scraped_data = playerScrape.scrape_player(first_name, last_name, school)
+        first, last = scraped_data["name"].split(" ", 1)
 
-            db.insert_into_player_identifying_information(
-                pii_id,
-                first_name,
-                last_name,
-                school
-            )
+        if scraped_data:
+                db.insert_into_player_identifying_information(
+                    first, last,
+                    scraped_data["school"]
+
+                )
 
         return redirect(url_for("index")) #allows for url change
 
 
-    query = "SELECT pii_id, first_name, last_name, school FROM player_identifying_information ORDER BY first_name"
-    players = db.execute_read(query, ())
+    all_data = []
+    players = db.get_all_players()
+    
+    for player in players:
+        pii_id = player["pii_id"]
 
-    return render_template("index.html", players=players)
+        career_stats = db.get_career_statistics_by_pii_id(pii_id)
+        for stat in career_stats:
+            print(stat["sets_played"], stat["kills"], stat["assists_per_set"])
+            
+        if career_stats:
+            career_dict = career_stats[0]
+        else:
+            None
+        
+        all_data.append({
+             "identifying" : player,
+             "career" : career_dict
+        })
+
+    return render_template("index.html", all_data = all_data)
 
 
 
-@app.route("/player/<pii_id>")
+@app.route("/player/<int:pii_id>")
 def player_detail(pii_id):
-    query = """
-        SELECT first_name, last_name, school
-        FROM player_identifying_information
-        WHERE pii_id = %s
-    """
-    player = db.execute_read(query, (pii_id,))
 
-    return render_template("player_detail.html", player=player)
+    player = db.get_all_player_data(pii_id)
 
+    if not player:
+         return redirect(url_for("index"))
+    return render_template("player_detail.html", player=player["iden"])
 
 
 if __name__ == "__main__":
