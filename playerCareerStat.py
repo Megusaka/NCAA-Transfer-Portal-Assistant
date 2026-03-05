@@ -34,18 +34,22 @@ def flatten(df):
 table2 = flatten(table2)
 table4 = flatten(table4)
 
-print("=== TABLE 2 (DEFENSIVE) COLUMNS ===")
-print(table2.columns)
+def pretty_print_table(df, title):
+    print(f"\n {title}\n")
 
-print("\n=== TABLE 2 (DEFENSIVE) ROWS ===")
-for _, row in table2.iterrows():
-    print(row.to_string())
-    print()
+    for _, row in df.iterrows():
+        player = str(row.iloc[0]).strip()
 
-print("=== TABLE 4 (OFFENSIVE) COLUMNS ===")
-print(table4.columns)
+        if player.lower() in ("", "nan", "none"):
+            continue
 
-print("\n=== TABLE 4 (OFFENSIVE) ROWS ===")
-for _, row in table4.iterrows():
-    print(row.to_string())
-    print()
+        print(f"Player: {player}")
+        print("-" * (8 + len(player)))
+
+        for col in df.columns[1:]:
+            print(f"{col:<18} {row[col]}")
+
+        print()
+
+pretty_print_table(table2, "TABLE 2 (DEFENSIVE)")
+pretty_print_table(table4, "TABLE 4 (OFFENSIVE)")
