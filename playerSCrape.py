@@ -20,11 +20,18 @@ url= western
 response = requests.get(url)
 #print(response.status_code)
 
-
 # with beaiutiful soup we can parse the html and extract the player names
 #reponse content is the html content of the page that we want to parse and extract 
 #the "html.parser" is the parser that we want to use to parse the html content of the page
 soup = BeautifulSoup(response.content, "html.parser")
+
+def split_name(full_name):
+    parts = full_name.split()
+    if len(parts) == 0:
+        return "N/A", "N/A"
+    if len(parts) == 1:
+        return parts[0], "N/A"
+    return parts[0], " ".join(parts[1:])
 
 # taking the list of players from the html by looking at the html structure 
 # the players are in a list item with the class "sidearm-roster-player"
@@ -37,14 +44,11 @@ eligibility = soup.select(".sidearm-roster-player-academic-year")
 position = soup.select(".sidearm-roster-player-position-long-short")
 height = soup.select(".sidearm-roster-player-height")
 
-
 # we can then loop through the list of players and other attributes of each player
 # the name of each player is in a div with the class "sidearm-roster-player-name"
 # we can use the select_one method to get the first div with that class 
 # the get_text method to get the text of that div which is the name of the player
 #allowing the name to be printed stripping any extra whitespace
-
-players = soup.select(".sidearm-roster-player")
 
 db = DatabaseConnector("player_identifying_information.db")
 db.connect()
@@ -62,12 +66,14 @@ for p in players:
     else:
         name = "N\\A"
 
+    first_name, last_name = split_name(name)
+
     hometown = hometown_tag.get_text(strip=True) if hometown_tag else "N\\A"
     eligibility = eligibility_tag.get_text(strip=True) if eligibility_tag else "N\\A"   
     position = position_tag.get_text(strip=True) if position_tag else "N\\A"
     height = height_tag.get_text(strip=True) if height_tag else "N\\A"
     print(name + " | " + hometown + " | " + eligibility + " | " + position + " | " + height)
 
-    db.player_identifying_information(name, hometown, eligibility, position, height)
+    db.player_identifying_information(first_name, last_name, hometown, eligibility, position, height)
 
 db.close()
