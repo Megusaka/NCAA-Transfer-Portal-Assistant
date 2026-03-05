@@ -2,7 +2,7 @@ import pandas as pd
 from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
-from database_connector import DatabaseConnector
+import DatabaseConnection as DatabaseConnector
 
 #date time documentation 
 #https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Timestamp.strftime.html
@@ -50,8 +50,9 @@ schedule.columns = schedule.columns.str.strip()
 print(schedule.columns)
 
 
-db = DatabaseConnector("game_statistics.db")
-db.connect()
+db = DatabaseConnector.get_db_connection()
+if db is not None:
+    print("Database connection successful.")
 
 # Print only Date and Opponent columns
 #the f-string is used to format the output
@@ -61,7 +62,26 @@ for _, row in schedule.iterrows():
    print(f"{row['Date']} — {row['Opponent']} — {row['W/L']} - {row['SP']} - {row['K']} - {row['E']} - {row['TA']} - {row['PCT']} - {row['AST']} - {row['SA']} - {row['SE']} - {row['RE']} - {row['DIG']} - {row['BS']} - {row['BA']} - {row['BE']}  - {row['BHE']} - {row['TB']}")
 
 
-db.insert_schedule(row['Date'], row['Opponent'], row['W/L'], row['SP'], row['K'], row['E'], row['TA'], row['PCT'], row['AST'], row['SA'], row['SE'], row['RE'], row['DIG'], row['BS'], row['BA'], row['BE'],  row['BHE'], row['TB'])
+db.insert_game_statistics(DatabaseConnector.GameStatistics(
+    game_date=row['Date'],
+    opponent=row['Opponent'],
+    sets_played=row['SP'],
+    kills=row['K'],
+    errs=row['E'],
+    total_attempts=row['TA'],
+    attack_percentage=row['PCT'],
+    assists=row['AST'],
+    serve_aces=row['SA'],
+    serve_errors=row['SE'],
+    reception_errors=row['RE'],
+    digs=row['DIG'],
+    block_solos=row['BS'],
+    block_assists=row['BA'],
+    block_errors=row['BE'],
+    ball_handling_errors=row['BHE'],
+    total_blocks=row['TB'],
+    pii_id=None
+))
 db.close()
 #player_career_stat = tables[3] # table  is the player stats table
 
