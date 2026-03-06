@@ -1,24 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
-
-def get_user_input():
-    user_input = input("Enter player name (first and last): ").strip()
-    parts = user_input.split()
-
-    if len(parts) == 0:
-        print("No name entered.")
-        return None, None, None
-
-    if len(parts) == 1:
-        first = parts[0].lower()
-        last = ""
-    else:
-        first = parts[0].lower()
-        last = " ".join(parts[1:]).lower()
-
-    school = input("Enter school name: ").strip()
-    return first, last, school
-
+from datetime import datetime
 
 def split_name(full_name):
     parts = full_name.strip().split()
@@ -28,21 +10,30 @@ def split_name(full_name):
         return parts[0], ""
     return parts[0], " ".join(parts[1:])
 
+# Scalable roster URL finder
+# Tries current year → previous year → year before that
+def get_valid_roster_url():
+    base = "https://gomountaineers.com/sports/womens-volleyball/roster"
+    current_year = datetime.now().year
 
-def scrape_player():
-    target_first, target_last, user_school = get_user_input()
+    for year in [current_year, current_year - 1, current_year - 2]:
+        url = f"{base}/{year}"
+        response = requests.get(url)
 
-    if target_first is None:
-        print("No name entered.")
-        return None
+        if response.status_code == 200:
+            return url
 
-    url = "https://gomountaineers.com/sports/womens-volleyball/roster"
-    response = requests.get(url)
+    return base
+
+def get_roster_info(first, last, school):
+    first = first.strip().lower()
+    last = last.strip().lower()
+
+    roster_url = get_valid_roster_url()
+    response = requests.get(roster_url)
     soup = BeautifulSoup(response.content, "html.parser")
 
     players = soup.select(".sidearm-roster-player")
-
-    found = False
 
     for p in players:
         name_tag = p.select_one(".sidearm-roster-player-name")
@@ -62,26 +53,13 @@ def scrape_player():
         if not first_name:
             continue
 
-        if first_name.lower() == target_first and last_name.lower() == target_last:
-            found = True
+        if first_name.lower() == first and last_name.lower() == last:
+            return {
+                "hometown": hometown_tag.get_text(strip=True) if hometown_tag else "N/A",
+                "eligibility": eligibility_tag.get_text(strip=True) if eligibility_tag else "N/A",
+                "position": position_tag.get_text(strip=True) if position_tag else "N/A",
+                "height": height_tag.get_text(strip=True) if height_tag else "N/A",
+                "school": school
+            }
 
-            hometown = hometown_tag.get_text(strip=True) if hometown_tag else "N/A"
-            eligibility = eligibility_tag.get_text(strip=True) if eligibility_tag else "N/A"
-            position = position_tag.get_text(strip=True) if position_tag else "N/A"
-            height = height_tag.get_text(strip=True) if height_tag else "N/A"
-
-            print("\nMATCH FOUND:")
-            print(f"Name: {first_name} {last_name}")
-            print(f"School: {user_school}")
-            print(f"Hometown: {hometown}")
-            print(f"Eligibility: {eligibility}")
-            print(f"Position: {position}")
-            print(f"Height: {height}\n")
-
-            return
-
-    if not found:
-        print("Player not found on roster.")
-
-if __name__ == "__main__":
-    scrape_player()
+    return None

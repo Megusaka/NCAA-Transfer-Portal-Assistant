@@ -9,41 +9,76 @@ index.html
     <h1>NCAA Volleyball Transfer Portal Assistant</h1>
 
     <h2>Search Player</h2>
-    <form method="POST">
+    <form action="/player" method="POST">
         <label>First Name:</label>
-        <input type="text" name="first_name" required><br><br>
+        <input type="text" name="first" required><br><br>
 
         <label>Last Name:</label>
-        <input type="text" name="last_name" required><br><br>
+        <input type="text" name="last" required><br><br>
 
         <label>School:</label>
         <input type="text" name="school" required><br><br>
 
         <button type="submit">Search</button>
     </form>
+
     
     <hr>
 
-    <h2>Search History</h2>
+<h2>Search History</h2>
+
+<h2>Search History</h2>
+
+<style>
+    table {
+        border-collapse: collapse;
+        width: 90%;
+        margin-top: 20px;
+    }
+    th, td {
+        border: 2px solid black;
+        padding: 8px 12px;
+        text-align: left;
+    }
+    th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+    .red {
+        color: red;
+        font-weight: bold;
+    }
+</style>
 
 <table>
-<tr>
-    <th>Name</th><th>School</th><th>Hometown</th><th>Eligibility</th><th>Position</th><th>Height</th><th>Sets Played</th><th>Kills</th><th>Blocks</th>
-</tr>
-{% for player in all_data %}
-<tr>
-    <td>{{ player.identifying.first_name }} {{ player.identifying.last_name }}</td>
-    <td>{{ player.identifying.school }}</td>
-    <td>{{ player.identifying.hometown or '' }}</td>
-    <td>{{ player.identifying.eligibility or '' }}</td>
-    <td>{{ player.identifying.position or '' }}</td>
-    <td>{{ player.identifying.height or '' }}</td>
-    <td>{{ player.career.sets_played or '' }}</td>
-    <td>{{ player.career.kills or '' }}</td>
-    <td>{{ player.career.blocks or '' }}</td>
-</tr>
-{% endfor %}
+    <tr>
+        <th>Name</th>
+        <th>School</th>
+        <th>Hometown</th>
+        <th>Eligibility</th>
+        <th>Position</th>
+        <th>Height</th>
+        <th>Sets Played</th>
+        <th>Kills</th>
+        <th>Blocks</th>
+    </tr>
+
+    {% for player in all_data %}
+    <tr>
+        <td class="red">{{ player.identifying.first_name }} {{ player.identifying.last_name }}</td>
+        <td class="red">{{ player.identifying.school }}</td>
+        <td class="red">{{ player.identifying.hometown or "N/A" }}</td>
+        <td class="red">{{ player.identifying.eligibility or "N/A" }}</td>
+        <td class="red">{{ player.identifying.position or "N/A" }}</td>
+        <td class="red">{{ player.identifying.height or "N/A" }}</td>
+
+        <td class="red">{{ player.career.SP if player.career else "N/A" }}</td>
+        <td class="red">{{ player.career.K if player.career else "N/A" }}</td>
+        <td class="red">{{ player.career.BLK if player.career else "N/A" }}</td>
+    </tr>
+    {% endfor %}
 </table>
+
 
 </body>
 </html>
