@@ -10,7 +10,6 @@ search_history = []
 def index():
     return render_template("index.html", all_data=search_history)
 
-
 @app.route("/player", methods=["POST"])
 def player():
     first = request.form["first"].strip().lower()

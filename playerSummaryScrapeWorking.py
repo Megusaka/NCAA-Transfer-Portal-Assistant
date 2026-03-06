@@ -10,8 +10,6 @@ def split_name(full_name):
         return parts[0], ""
     return parts[0], " ".join(parts[1:])
 
-# Scalable roster URL finder
-# Tries current year → previous year → year before that
 def get_valid_roster_url():
     base = "https://gomountaineers.com/sports/womens-volleyball/roster"
     current_year = datetime.now().year
@@ -19,7 +17,6 @@ def get_valid_roster_url():
     for year in [current_year, current_year - 1, current_year - 2]:
         url = f"{base}/{year}"
         response = requests.get(url)
-
         if response.status_code == 200:
             return url
 
@@ -49,7 +46,6 @@ def get_roster_info(first, last, school):
         raw_name = raw_name.lstrip("0123456789 ").strip()
 
         first_name, last_name = split_name(raw_name)
-
         if not first_name:
             continue
 
@@ -61,5 +57,4 @@ def get_roster_info(first, last, school):
                 "height": height_tag.get_text(strip=True) if height_tag else "N/A",
                 "school": school
             }
-
     return None
