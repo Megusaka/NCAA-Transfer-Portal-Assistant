@@ -1,3 +1,4 @@
+#resource https://www.djamware.com/post/web-scraping-with-python-a-complete-guide-using-beautifulsoup-and-requests?
 from bs4 import BeautifulSoup
 import requests
 from datetime import datetime

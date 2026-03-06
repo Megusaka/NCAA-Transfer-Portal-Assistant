@@ -1,3 +1,6 @@
+#sources
+# multiIndexing https://stackoverflow.com/questions/79899547/flatten-multindex-column-in-a-pipe-in-pandas
+#flattening https://stackoverflow.com/questions/14507794/how-to-flatten-a-hierarchical-index-in-columns
 import pandas as pd
 from datetime import datetime
 import requests
@@ -7,7 +10,7 @@ def get_valid_stats_url():
     current_year = datetime.now().year
     base = "https://gomountaineers.com/sports/womens-volleyball/stats"
 
-    # Try current year → previous year
+    # Try current year 
     for year in [current_year, current_year - 1]:
         url = f"{base}/{year}"
         if requests.get(url).status_code == 200:
@@ -16,23 +19,19 @@ def get_valid_stats_url():
     return f"{base}/{current_year - 1}"
 
 def load_stats_tables(stats_url):
-    # Load HTML
     html = requests.get(stats_url).text
     soup = BeautifulSoup(html, "html.parser")
 
-    # Extract clean names ("Last, First")
     clean_names = []
     for a in soup.find_all("a", href=True):
         text = a.get_text(strip=True)
         if "," in text:
             clean_names.append(text)
 
-    # Load tables
     tables = pd.read_html(stats_url)
     off_df = tables[3]
     def_df = tables[4]
 
-    # Flatten headers
     def flatten(df):
         if isinstance(df.columns, pd.MultiIndex):
             df.columns = df.columns.map(
