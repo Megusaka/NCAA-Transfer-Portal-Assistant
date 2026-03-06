@@ -1,3 +1,11 @@
+#mering 
+#https://docs.python.org/3/tutorial/datastructures.html#dictionaries
+#scraping request 
+#https://docs.python.org/3/tutorial/modules.html
+#https://flask.palletsprojects.com/en/stable/quickstart/#accessing-request-data
+#data manipulation 
+#https://docs.python.org/3/tutorial/datastructures.html#more-on-lists
+
 from flask import Flask, render_template, request
 import playerCareerStatWorking as stat_scraper
 import playerSummaryScrapeWorking as roster_scraper
