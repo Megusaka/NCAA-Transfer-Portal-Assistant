@@ -1,6 +1,15 @@
 #sources
 # multiIndexing https://stackoverflow.com/questions/79899547/flatten-multindex-column-in-a-pipe-in-pandas
-#flattening https://stackoverflow.com/questions/14507794/how-to-flatten-a-hierarchical-index-in-columns
+#flattening 
+# https://stackoverflow.com/questions/14507794/how-to-flatten-a-hierarchical-index-in-columns
+# https://pandas.pydata.org/docs/user_guide/indexing.html#boolean-indexing
+#data manegement 
+#https://docs.python.org/3/library/stdtypes.html#string-methods
+#injection
+#https://pandas.pydata.org/docs/user_guide/dsintro.html#column-selection-addition-deletion
+#https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.copy.html
+
+
 import pandas as pd
 from datetime import datetime
 import requests
@@ -44,7 +53,7 @@ def load_stats_tables(stats_url):
     off_df = flatten(off_df)
     def_df = flatten(def_df)
 
-    # Inject names
+    # Inject names cleaning  data 
     def inject_names(df):
         df = df.copy()
         df["clean_name"] = clean_names[:len(df)]

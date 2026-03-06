@@ -6,6 +6,7 @@
 #data manipulation 
 #https://docs.python.org/3/tutorial/datastructures.html#more-on-lists
 
+
 from flask import Flask, render_template, request
 import playerCareerStatWorking as stat_scraper
 import playerSummaryScrapeWorking as roster_scraper
