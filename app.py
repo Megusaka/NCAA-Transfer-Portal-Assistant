@@ -7,48 +7,84 @@
 #https://docs.python.org/3/tutorial/datastructures.html#more-on-lists
 
 
-from flask import Flask, render_template, request
-import playerCareerStatWorking as stat_scraper
-import playerSummaryScrapeWorking as roster_scraper
+from flask import Flask, render_template, request, redirect, url_for
+import DatabaseConnection as db
+import playerSCrape as playerScrape
 
 app = Flask(__name__)
 
-search_history = []
-
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def index():
-    return render_template("index.html", all_data=search_history)
+    if request.method == "POST":
+        first_name = request.form.get("first_name")
+        last_name = request.form.get("last_name")
+        school = request.form.get("school")
 
-@app.route("/player", methods=["POST"])
-def player():
-    first = request.form["first"].strip().lower()
-    last = request.form["last"].strip().lower()
-    school = request.form["school"].strip()
+        if not first_name or not last_name or not school:
+                return redirect(url_for("index"))
+#will add to zoe's write to database file if needed, here just for current access, needs check for redundant add with get_player_id_by_info
+        scraped_data = playerScrape.scrape_player(first_name, last_name, school)
+        first, last = scraped_data["name"].split(" ", 1)
 
-    stats = stat_scraper.scrape_player(first, last, school)
-    roster = roster_scraper.get_roster_info(first, last, school)
+        if scraped_data:
+                db.insert_into_player_identifying_information(
+                    first, last,
+                    scraped_data["school"]
 
-    if stats is None:
-        return render_template("player_detail.html", careerStats=None)
+                )
 
-    identifying = {
-        "first_name": first.title(),
-        "last_name": last.title(),
-        "school": school,
-        "hometown": roster.get("hometown", "N/A") if roster else "N/A",
-        "eligibility": roster.get("eligibility", "N/A") if roster else "N/A",
-        "position": roster.get("position", "N/A") if roster else "N/A",
-        "height": roster.get("height", "N/A") if roster else "N/A"
-    }
+        return redirect(url_for("index")) #allows for url change
 
-    careerStats = {**stats["offensive"], **stats["defensive"]}
 
-    search_history.append({
-        "identifying": identifying,
-        "careerStats": careerStats
-    })
+    all_data = []
+    players = db.get_all_player_data()
+    
+    for player in players:
+        pii_id = player["pii_id"]
 
-    return render_template("player_detail.html", careerStats=careerStats)
+        career_stats = db.get_career_statistics_by_pii_id(pii_id)
+        for stat in career_stats:
+            print(stat["sets_played"], stat["kills"], stat["assists_per_set"])
+            
+        if career_stats:
+            career_dict = career_stats[0]
+        else:
+            None
+        
+        all_data.append({
+             "identifying" : player,
+             "career" : career_dict
+        })
+
+    return render_template("index.html", all_data = all_data)
+
+@app.route("/favorites")
+def favorites():
+    # currently all players until favorites implemented in db
+    # eventually filter WHERE favorite = TRUE
+    all_data = []
+    players = db.get_all_player_data()
+    for player in players:
+        pii_id = player["pii_id"]
+        career_stats = db.get_career_statistics_by_pii_id(pii_id)
+        career_dict = career_stats[0] if career_stats else {}
+        all_data.append({
+            "identifying": player,
+            "career": career_dict
+        })
+
+    return render_template("favorites.html", all_data=all_data)
+
+
+@app.route("/player/<int:pii_id>")  #detail view page, show graphs and game stats in future
+def player_detail(pii_id):
+
+    career_stats = db.get_career_statistics_by_pii_id(pii_id)
+
+    if not career_stats:
+         return redirect(url_for("index"))
+    return render_template("player_detail.html", career = career_stats)
+
 
 if __name__ == "__main__":
     app.run(debug=True)

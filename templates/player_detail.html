@@ -2,78 +2,16 @@
 <html>
 <head>
     <title>Player Details</title>
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 60%;
-            margin-bottom: 30px;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .red {
-            color: red;
-        }
-    </style>
 </head>
 <body>
 
 <h1>Player Details</h1>
 
-{% if careerStats %}
-
-    <p><strong>Name:</strong> <span class="red">{{ careerStats.first }} {{ careerStats.last }}</span></p>
-    <p><strong>School:</strong> <span class="red">{{ careerStats.school }}</span></p>
-    <p><strong>Player Number:</strong> 
-        <span class="red">
-            {{ careerStats["#_#"] if "#_#" in careerStats else "N/A" }}
-        </span>
-    </p>
-
-    <h2>Offensive Statistics</h2>
-    <table>
-        <tr><th>Stat</th><th>Value</th></tr>
-        <tr><td>SP</td><td class="red">{{ careerStats["SP"] }}</td></tr>
-        <tr><td>MP</td><td class="red">{{ careerStats["MP"] }}</td></tr>
-        <tr><td>MS</td><td class="red">{{ careerStats["MS"] }}</td></tr>
-        <tr><td>PTS</td><td class="red">{{ careerStats["PTS"] }}</td></tr>
-        <tr><td>PTS/S</td><td class="red">{{ careerStats["PTS/S"] }}</td></tr>
-        <tr><td>K</td><td class="red">{{ careerStats["K"] }}</td></tr>
-        <tr><td>K/S</td><td class="red">{{ careerStats["K/S"] }}</td></tr>
-        <tr><td>E</td><td class="red">{{ careerStats["E"] }}</td></tr>
-        <tr><td>TA</td><td class="red">{{ careerStats["TA"] }}</td></tr>
-        <tr><td>PCT</td><td class="red">{{ careerStats["PCT"] }}</td></tr>
-        <tr><td>A</td><td class="red">{{ careerStats["A"] }}</td></tr>
-        <tr><td>A/S</td><td class="red">{{ careerStats["A/S"] }}</td></tr>
-        <tr><td>SA</td><td class="red">{{ careerStats["SA"] }}</td></tr>
-        <tr><td>SA/S</td><td class="red">{{ careerStats["SA/S"] }}</td></tr>
-        <tr><td>SE</td><td class="red">{{ careerStats["SE"] }}</td></tr>
-    </table>
-
-    <h2>Defensive Statistics</h2>
-    <table>
-        <tr><th>Stat</th><th>Value</th></tr>
-        <tr><td>SP</td><td class="red">{{ careerStats["SP"] }}</td></tr>
-        <tr><td>DIG</td><td class="red">{{ careerStats["DIG"] }}</td></tr>
-        <tr><td>DIG/S</td><td class="red">{{ careerStats["DIG/S"] }}</td></tr>
-        <tr><td>RECEPT</td><td class="red">{{ careerStats["RE"] }}</td></tr>
-        <tr><td>RECEPT/TA</td><td class="red">{{ careerStats["RE/TA"] }}</td></tr>
-        <tr><td>RECEPT%</td><td class="red">{{ careerStats["RE%"] }}</td></tr>
-        <tr><td>RECEPT/S</td><td class="red">{{ careerStats["RE/S"] }}</td></tr>
-        <tr><td>BS</td><td class="red">{{ careerStats["BS"] }}</td></tr>
-        <tr><td>BA</td><td class="red">{{ careerStats["BA"] }}</td></tr>
-        <tr><td>BLK</td><td class="red">{{ careerStats["BLK"] }}</td></tr>
-        <tr><td>BLK/S</td><td class="red">{{ careerStats["BLK/S"] }}</td></tr>
-        <tr><td>BE</td><td class="red">{{ careerStats["BE"] }}</td></tr>
-        <tr><td>BHE</td><td class="red">{{ careerStats["BHE"] }}</td></tr>
-    </table>
-
+{% if player %}
+    <p>Name: {{ player[0][0] }} {{ player[0][1] }}</p>
+    <p>School: {{ player[0][2] }}</p>
 {% else %}
-    <p>Player not found. Either a redshirt or missing stats.</p>
+    <p>Player not found.</p>
 {% endif %}
 
 <br>
