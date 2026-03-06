@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Player Details</title>
+</head>
+<body>
+
+<h1>Player Details</h1>
+
+{% if player %}
+    <p>Name: {{ player.first }} {{ player.last }}</p>
+    <p>School: {{ player.school }}</p>
+    <p>Hometown: {{ player.hometown }}</p>
+    <p>Eligibility: {{ player.eligibility }}</p>
+    <p>Position: {{ player.position }}</p>
+    <p>Height: {{ player.height }}</p>
+{% else %}
+    <p>Player not found.</p>
+{% endif %}
+
+
+<br>
+<a href="{{ url_for('index') }}">Back to Home</a>
+
+</body>
+</html>
