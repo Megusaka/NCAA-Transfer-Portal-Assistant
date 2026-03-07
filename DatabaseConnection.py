@@ -283,6 +283,7 @@ def get_career_statistics_by_pii_id(pii_id):
 conn = get_db_connection()
 if conn is not None:
     print("Database connection successful.")
+    conn.close()
 
 
 ###INSERTING TEST DATA INTO DATABASE###
@@ -301,4 +302,4 @@ if conn is not None:
 test_career_stats = get_career_statistics_by_player_id(1)
 print(test_career_stats)
 
-conn.close()
+
