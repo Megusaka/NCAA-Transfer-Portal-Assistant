@@ -1,16 +1,14 @@
 use TransPort;
 
-CREATE TABLE IF NOT EXISTS player_identifying_information (
-	pii_id INT AUTO_INCREMENT PRIMARY KEY,
-    first_name VARCHAR(50) NOT NULL,
-    last_name VARCHAR(50) NOT NULL,
-    school VARCHAR(50) NOT NULL,
-    Hometown VARCHAR(50) NOT NULL,
-    Eligibility VARCHAR(20) NOT NULL,
-    Position VARCHAR(50) NOT NULL,
-    Height FLOAT NOT NULL,
-    Kills INT NOT NULL,
-    Blocks INT NOT NULL
+CREATE TABLE player_identifying_information (
+    pii_id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    school VARCHAR(50),
+    hometown VARCHAR(50),
+    eligibility VARCHAR(20),
+    position VARCHAR(50),
+    height VARCHAR(10)
 );
 
 CREATE TABLE IF NOT EXISTS career_statistics (
