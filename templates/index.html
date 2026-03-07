@@ -29,15 +29,18 @@
 <tr>
     <th>Name</th><th>School</th><th>Hometown</th><th>Eligibility</th><th>Position</th><th>Height</th>
 </tr>
-{% for player in all_data %}
+{% for player in player_summary %}
 <tr>
     <td>{{ player.identifying.first_name }} {{ player.identifying.last_name }}</td>
     <td>{{ player.identifying.school }}</td>
-    <td>{{player.identifying.hometown }}</td>
-    <td>{{player.identifying.eligibility }}</td>
-    <td>{{player.identifying.position }}</td>
-    <td>{{player.identifying.height }}</td>
+    <td>{{ player.identifying.hometown }}</td>
+    <td>{{ player.identifying.eligibility }}</td>
+    <td>{{ player.identifying.position }}</td>
+    <td>{{ player.identifying.height }}</td>
 </tr>
 {% endfor %}
 </table>
+{% if error %}
+<p class="error">{{ error }}</p>
+{% endif %}
 {% endblock %}
