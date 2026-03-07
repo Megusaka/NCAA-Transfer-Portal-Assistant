@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 
-import mysql.connector
-from mysql.connector import Error
-from flask import Flask
+import sqlite3
 
 @dataclass
 class PlayerIdentifyingInformation:
@@ -91,11 +89,16 @@ def execute_insert(query, params):
 def insert_into_player_identifying_information(pii):
     query = """
     INSERT INTO player_identifying_information (first_name, last_name, school)
-    VALUES ( %s, %s, %s)
+    VALUES (?, ?, ?)
     """
-    params = (pii.first_name, pii.last_name, pii.school)
+    params = (
+        pii.first_name, 
+        pii.last_name, 
+        pii.school
+        )
     execute_insert(query, params)
     return print("Player identifying information inserted successfully")
+
 
 def insert_into_career_statistics(career_stats):
     query = """
@@ -104,15 +107,36 @@ def insert_into_career_statistics(career_stats):
     assists_per_set, serve_aces, serve_errors, serve_aces_per_set, 
     reception_errors, digs, digs_per_set, block_solos, block_assists, 
     blk, blk_per_s, block_errors, ball_handling_errors, points, pii_id)
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s,
-    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 
+    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """
 
-    params = (career_stats.sets_played, career_stats.kills, career_stats.kills_per_set, career_stats.errs, career_stats.total_attempts, career_stats.attack_percentage, career_stats.assits,
-              career_stats.assists_per_set, career_stats.serve_aces, career_stats.serve_errors, career_stats.serve_aces_per_set, career_stats.reception_errors, career_stats.digs,
-              career_stats.digs_per_set, career_stats.block_solos, career_stats.block_assists, career_stats.blk, career_stats.blk_per_s, career_stats.block_errors,
-              career_stats.ball_handling_errors, career_stats.points, career_stats.pii_id)
+    params = (
+        career_stats.sets_played,
+        career_stats.kills,
+        career_stats.kills_per_set,
+        career_stats.errs,
+        career_stats.total_attempts,
+        career_stats.attack_percentage,
+        career_stats.assits,
+        career_stats.assists_per_set,
+        career_stats.serve_aces,
+        career_stats.serve_errors,
+        career_stats.serve_aces_per_set,
+        career_stats.reception_errors,
+        career_stats.digs,
+        career_stats.digs_per_set,
+        career_stats.block_solos,
+        career_stats.block_assists,
+        career_stats.blk,
+        career_stats.blk_per_s,
+        career_stats.block_errors,
+        career_stats.ball_handling_errors,
+        career_stats.points,
+        career_stats.pii_id
+    )
     execute_insert(query, params)
+
 
 def insert_game_statistics(game_stats):
     query = """
@@ -124,15 +148,27 @@ def insert_game_statistics(game_stats):
             block_errors, ball_handling_errors, total_blocks,
             pii_id
         )
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s,
-                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?,
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """
     params = (
-        game_stats.game_date, game_stats.opponent, game_stats.sets_played, game_stats.kills, game_stats.errs,
-        game_stats.total_attempts, game_stats.attack_percentage, game_stats.assists,
-        game_stats.serve_aces, game_stats.serve_errors, game_stats.reception_errors,
-        game_stats.digs, game_stats.block_solos, game_stats.block_assists,
-        game_stats.block_errors, game_stats.ball_handling_errors, game_stats.total_blocks,
+        game_stats.game_date,
+        game_stats.opponent,
+        game_stats.sets_played,
+        game_stats.kills,
+        game_stats.errs,
+        game_stats.total_attempts,
+        game_stats.attack_percentage,
+        game_stats.assists,
+        game_stats.serve_aces,
+        game_stats.serve_errors,
+        game_stats.reception_errors,
+        game_stats.digs,
+        game_stats.block_solos,
+        game_stats.block_assists,
+        game_stats.block_errors,
+        game_stats.ball_handling_errors,
+        game_stats.total_blocks,
         game_stats.pii_id
     )
     return execute_insert(query, params)
@@ -159,7 +195,7 @@ def execute_read(query, params):
 def get_player_id_by_information(pii):
     query = """
     SELECT pii_id FROM player_identifying_information
-    WHERE first_name = %s AND last_name = %s AND school = %s
+    WHERE first_name = ? AND last_name = ? AND school = ?
     """
     params = (pii.first_name, pii.last_name, pii.school)
     results = execute_read(query, params)
@@ -170,7 +206,7 @@ def get_player_id_by_information(pii):
         return None
 
 def get_career_statistics_by_player_id(player_id):
-    query = "SELECT * FROM career_statistics WHERE player_id = %s"
+    query = "SELECT * FROM career_statistics WHERE player_id = ?"
     results = execute_read(query, (player_id,))
     if results:
         return results[0]
@@ -179,7 +215,7 @@ def get_career_statistics_by_player_id(player_id):
         return None
 
 def get_game_statistics_by_player_id(player_id):
-    query = "SELECT * FROM game_statistics WHERE player_id = %s"
+    query = "SELECT * FROM game_statistics WHERE player_id = ?"
     return execute_read(query, (player_id,))
 
 def execute_update(query, params):
@@ -199,19 +235,19 @@ def execute_update(query, params):
         print("Failed to connect to the database.")
 
 def update_player_school(pii_id, new_school):
-    query = "UPDATE player_identifying_information SET school = %s WHERE pii_id = %s"
+    query = "UPDATE player_identifying_information SET school = ? WHERE pii_id = ?"
     params = (new_school, pii_id)
     execute_update(query, params)
 
 def update_career_statistics(career_stats):
     query = """
     UPDATE career_statistics 
-    SET sets_played = %s, kills = %s, kills_per_set = %s, 
-    errs = %s, total_attempts = %s, attack_percentage = %s, assits = %s, 
-    assists_per_set = %s, serve_aces = %s, serve_errors = %s, serve_aces_per_set = %s, 
-    reception_errors = %s, digs = %s, digs_per_set = %s, block_solos = %s, block_assists = %s, 
-    blk = %s, blk_per_s = %s, block_errors = %s, ball_handling_errors = %s, points = %s
-    WHERE player_id = %s AND piid_id = %s
+    SET sets_played = ?, kills = ?, kills_per_set = ?, 
+    errs = ?, total_attempts = ?, attack_percentage = ?, assits = ?, 
+    assists_per_set = ?, serve_aces = ?, serve_errors = ?, serve_aces_per_set = ?, 
+    reception_errors = ?, digs = ?, digs_per_set = ?, block_solos = ?, block_assists = ?, 
+    blk = ?, blk_per_s = ?, block_errors = ?, ball_handling_errors = ?, points = ?
+    WHERE player_id = ? AND piid_id = ?
     """
     params = (career_stats.sets_played, career_stats.kills, career_stats.kills_per_set, career_stats.errs, career_stats.total_attempts, career_stats.attack_percentage, career_stats.assists,
               career_stats.assists_per_set, career_stats.serve_aces, career_stats.serve_errors, career_stats.serve_aces_per_set, career_stats.reception_errors, career_stats.digs,
@@ -222,12 +258,12 @@ def update_career_statistics(career_stats):
 def update_game_statistics(game_stats):
     query = """
         UPDATE game_statistics
-        SET game_date = %s, opponent = %s, sets_played = %s, kills = %s, errs = %s,
-            total_attempts = %s, attack_percentage = %s, assits = %s,
-            serve_aces = %s, serve_errors = %s, reception_errors = %s,
-            digs = %s, block_solos = %s, block_assists = %s,
-            block_errors = %s, ball_handling_errors = %s, total_blocks = %s
-        WHERE piid_id = %s AND game_date = %s AND opponent = %s
+        SET game_date = ?, opponent = ?, sets_played = ?, kills = ?, errs = ?,
+            total_attempts = ?, attack_percentage = ?, assits = ?,
+            serve_aces = ?, serve_errors = ?, reception_errors = ?,
+            digs = ?, block_solos = ?, block_assists = ?,
+            block_errors = ?, ball_handling_errors = ?, total_blocks = ?
+        WHERE piid_id = ? AND game_date = ? AND opponent = ?
     """
     params = (
         game_stats.game_date, game_stats.opponent, game_stats.sets_played, game_stats.kills, game_stats.errs,
@@ -256,15 +292,15 @@ def execute_delete(query, params):
         print("Failed to connect to the database.")
 
 def delete_player_by_id(pii_id):
-    query = "DELETE FROM player_identifying_information WHERE pii_id = %s"
-    execute_delete(query, pii_id)
+    query = "DELETE FROM player_identifying_information WHERE pii_id = ?"
+    execute_delete(query, (pii_id,))
 
 def delete_career_statistics_by_player_id(pii_id):
-    query = "DELETE FROM career_statistics WHERE piid_id = %s"
-    execute_delete(query, pii_id)
+    query = "DELETE FROM career_statistics WHERE piid_id = ?"
+    execute_delete(query, (pii_id,))
 
 def delete_game_statistics_by_player_id_and_game_date(pii_id, game_date):
-    query = "DELETE FROM game_statistics WHERE piid_id = %s AND game_date = %s"
+    query = "DELETE FROM game_statistics WHERE piid_id = ? AND game_date = ?"
     params = (pii_id, game_date)
     execute_delete(query, params)
 
@@ -274,7 +310,7 @@ def get_all_player_data():
     return execute_read(query, ())
 
 def get_career_statistics_by_pii_id(pii_id):
-    query = "SELECT * FROM career_statistics WHERE pii_id = %s"
+    query = "SELECT * FROM career_statistics WHERE pii_id = ?"
     return execute_read(query, (pii_id,))
 
 
