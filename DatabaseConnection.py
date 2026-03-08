@@ -155,7 +155,7 @@ def create_table_if_not_exists_game_statistics(connection):
             print(f"Error creating table: {e}")
 
 def get_db_connection():
-    db_filepath = "myTest.db"
+    db_filepath = "transferPortalAssistant.db"
     try:
         connection = sqlite3.connect(db_filepath)
         create_table_if_not_exists_player_identifying_information(connection)
