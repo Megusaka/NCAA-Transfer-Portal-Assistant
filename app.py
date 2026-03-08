@@ -1,53 +1,36 @@
 from flask import Flask, render_template, request, redirect, url_for
 import DatabaseConnection as db
-import playerSCrape as playerScrape
+import playerScraperWorking as player_scraper
+import careerStatScraper as career_stat_scraper
+
 
 app = Flask(__name__)
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+    player_summary = []
+    player_career_stats = []
     if request.method == "POST":
         first_name = request.form.get("first_name")
         last_name = request.form.get("last_name")
         school = request.form.get("school")
 
-        if not first_name or not last_name or not school:
-                return redirect(url_for("index"))
-#will add to zoe's write to database file if needed, here just for current access, needs check for redundant add with get_player_id_by_info
-        scraped_data = playerScrape.scrape_player(first_name, last_name, school)
-        first, last = scraped_data["name"].split(" ", 1)
-
-        if scraped_data:
-                db.insert_into_player_identifying_information(
-                    first, last,
-                    scraped_data["school"]
-
-                )
-
-        return redirect(url_for("index")) #allows for url change
-
-
-    all_data = []
-    players = db.get_all_player_data()
-    
-    for player in players:
-        pii_id = player["pii_id"]
-
-        career_stats = db.get_career_statistics_by_pii_id(pii_id)
-        for stat in career_stats:
-            print(stat["sets_played"], stat["kills"], stat["assists_per_set"])
+        player_data = player_scraper.scrape_player(first_name, last_name, school)
+        if player_data:
+            pii = db.PlayerIdentifyingInformation(
+                pii_id=None,
+                first_name=player_data["identifying"]["first_name"],
+                last_name=player_data["identifying"]["last_name"],
+                school=player_data["identifying"]["school"],
+                hometown=player_data["identifying"]["hometown"],
+                eligibility=player_data["identifying"]["eligibility"],
+                position=player_data["identifying"]["position"],
+                height=player_data["identifying"]["height"]
+            )
+            db.insert_into_player_identifying_information(pii)
+            player_summary.append(player_data)
             
-        if career_stats:
-            career_dict = career_stats[0]
-        else:
-            career_dict = {}
-        
-        all_data.append({
-             "identifying" : player,
-             "career" : career_dict
-        })
-
-    return render_template("index.html", all_data = all_data)
+    return render_template("index.html", player_summary=player_summary)
 
 @app.route("/favorites")
 def favorites():
