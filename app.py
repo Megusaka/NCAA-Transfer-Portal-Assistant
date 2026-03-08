@@ -29,17 +29,7 @@ def index():
             )
             db.insert_into_player_identifying_information(pii)
             player_summary.append(player_data)
-
-        player_career_stats_data = career_stat_scraper.scrape_stats(first_name, last_name, school)
-        if player_career_stats_data:
-            pii = db.CareerStatistics(
-                pii_id=None,
-                offensive_stats=player_career_stats_data["career"]["offensive_stats"],
-                defensive_stats=player_career_stats_data["career"]["defensive_stats"]
-            )
-            db.insert_into_career_statistics(pii)
-            player_career_stats.append(player_career_stats_data)
-
+            
     return render_template("index.html", player_summary=player_summary)
 
 
