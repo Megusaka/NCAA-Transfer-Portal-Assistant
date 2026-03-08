@@ -277,7 +277,7 @@ def execute_read(query, params):
     connection = get_db_connection()
     if connection is not None:
         try:
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor()
             cursor.execute(query, params)
             results = cursor.fetchall()
             return results
@@ -484,7 +484,8 @@ if conn is not None:
 #     serve_aces=2, serve_errors=1, reception_errors=0, digs=10, block_solos=1, block_assists=2, block_errors=0, ball_handling_errors=1, total_blocks=3, pii_id=1)
 # insert_game_statistics(game_stats)
 
-test_career_stats = get_career_statistics_by_player_id(1)
-print(test_career_stats)
+
+# print(get_all_player_data())
+
 
 
