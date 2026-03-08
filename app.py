@@ -1,12 +1,15 @@
 from flask import Flask, render_template, request
 import database_connector as db
 import playerScraperWorking as player_scraper
+import careerStatScraper as career_stat_scraper
+
 
 app = Flask(__name__)
 
 @app.route("/", methods=["GET", "POST"])
 def index():
     player_summary = []
+    player_career_stats = []
     if request.method == "POST":
         first_name = request.form.get("first_name")
         last_name = request.form.get("last_name")
@@ -25,16 +28,35 @@ def index():
                 height=player_data["identifying"]["height"]
             )
             db.insert_into_player_identifying_information(pii)
-
             player_summary.append(player_data)
+
+        player_career_stats_data = career_stat_scraper.scrape_stats(first_name, last_name, school)
+        if player_career_stats_data:
+            pii = db.CareerStatistics(
+                pii_id=None,
+                offensive_stats=player_career_stats_data["career"]["offensive_stats"],
+                defensive_stats=player_career_stats_data["career"]["defensive_stats"]
+            )
+            db.insert_into_career_statistics(pii)
+            player_career_stats.append(player_career_stats_data)
 
     return render_template("index.html", player_summary=player_summary)
 
+
 @app.route("/favorites")
 def favorites():
-    favorite_players = db.get_all_favorite_players() 
+    favorite_players = db.get_all_favorite_players()
     return render_template("favorites.html", all_data=favorite_players)
 
+
+'''
+@app.route("/player/<int:pii_id>")  #detail view page, show graphs and game stats in future
+def player_detail(pii_id):
+    career_stats = db.get_career_statistics_by_pii_id(pii_id)
+    if not career_stats:
+         return redirect(url_for("index"))
+    return render_template("player_detail.html", career = career_stats)
+'''
 
 if __name__ == "__main__":
     app.run(debug=True)

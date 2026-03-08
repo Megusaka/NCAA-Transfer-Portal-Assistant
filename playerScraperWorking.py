@@ -1,8 +1,9 @@
 import pandas as pd
+from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
 
-#roster scraper starts here 
+# ROSTER SCRAPER starts here
 def split_name(full_name):
     parts = full_name.strip().split()
 
@@ -47,7 +48,6 @@ def scrape_roster(first, last, school):
         first_name, last_name = split_name(raw_name)
 
         if first_name and last_name:
-
             if first_name.lower() == first and last_name.lower() == last:
 
                 return {
@@ -61,7 +61,9 @@ def scrape_roster(first, last, school):
 
     return None
 
+
 def scrape_player(first, last, school):
+
     roster = scrape_roster(first, last, school)
 
     if roster is None:
