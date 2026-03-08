@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-import DatabaseConnectionon as db
+import DatabaseConnection as db
 import playerScraperWorking as player_scraper
 import careerStatScraper as career_stat_scraper
 
