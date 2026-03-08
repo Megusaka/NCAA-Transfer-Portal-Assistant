@@ -18,7 +18,7 @@ class CareerStatistics:
     errs: int
     total_attempts: int
     attack_percentage: float
-    assits: int
+    assists: int
     assists_per_set: float
     serve_aces: int
     serve_errors: int
@@ -56,17 +56,114 @@ class GameStatistics:
     total_blocks: int
     pii_id: int
 
+# def get_db_connection():
+#     try:
+#         connection = mysql.connector.connect(
+#             host="radyweb.wsc.western.edu",
+#             user="ncaa_user",
+#             password="StrongPass01!",
+#             database="ncaa_transfer_portal_assistant"
+#         )
+#         return connection
+#     except Error as e:
+#         print(f"Error connecting to MySQL: {e}")
+#         return None
+
+def create_table_if_not_exists_player_identifying_information(connection):
+    #connection = get_db_connection()
+    if connection is not None:
+        try:
+            cursor = connection.cursor()
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS player_identifying_information (
+                    pii_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    first_name TEXT NOT NULL,
+                    last_name TEXT NOT NULL,
+                    school TEXT NOT NULL
+                )
+            """)
+            connection.commit()
+        except sqlite3.Error as e:
+            print(f"Error creating table: {e}")
+
+def create_table_if_not_exists_career_statistics(connection):
+    if connection is not None:
+        try:
+            cursor = connection.cursor()
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS career_statistics (
+                    player_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    sets_played INTEGER,
+                    kills INTEGER,
+                    kills_per_set REAL,
+                    errs INTEGER,
+                    total_attempts INTEGER,
+                    attack_percentage REAL,
+                    assists INTEGER,
+                    assists_per_set REAL,
+                    serve_aces INTEGER,
+                    serve_errors INTEGER,
+                    serve_aces_per_set REAL,
+                    reception_errors INTEGER,
+                    digs INTEGER,
+                    digs_per_set REAL,
+                    block_solos INTEGER,
+                    block_assists INTEGER,
+                    blk INTEGER,
+                    blk_per_s REAL,
+                    block_errors INTEGER,
+                    ball_handling_errors INTEGER,
+                    points INTEGER,
+                    pii_id INTEGER NOT NULL,
+                    FOREIGN KEY (pii_id) REFERENCES player_identifying_information(pii_id)
+                )
+            """)
+            connection.commit()
+        except sqlite3.Error as e:
+            print(f"Error creating table: {e}")
+
+def create_table_if_not_exists_game_statistics(connection):
+    if connection is not None:
+        try:
+            cursor = connection.cursor()
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS game_statistics (
+                    game_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    game_date TEXT NOT NULL,
+                    opponent TEXT NOT NULL,
+                    sets_played INTEGER,
+                    kills INTEGER,
+                    errs INTEGER,
+                    total_attempts INTEGER,
+                    attack_percentage REAL,
+                    assists INTEGER,
+                    serve_aces INTEGER,
+                    serve_errors INTEGER,
+                    reception_errors INTEGER,
+                    digs INTEGER,
+                    block_solos INTEGER,
+                    block_assists INTEGER,
+                    block_errors INTEGER,
+                    ball_handling_errors INTEGER,
+                    total_blocks INTEGER,
+                    pii_id INTEGER NOT NULL,
+                    FOREIGN KEY (pii_id) REFERENCES player_identifying_information(pii_id)
+                )
+            """)
+            connection.commit()
+        except sqlite3.Error as e:
+            print(f"Error creating table: {e}")
+
 def get_db_connection():
+    db_filepath = "myTest.db"
     try:
-        connection = mysql.connector.connect(
-            host="radyweb.wsc.western.edu",
-            user="ncaa_user",
-            password="StrongPass01!",
-            database="ncaa_transfer_portal_assistant"
-        )
+        connection = sqlite3.connect(db_filepath)
+        create_table_if_not_exists_player_identifying_information(connection)
+        create_table_if_not_exists_career_statistics(connection)
+        create_table_if_not_exists_game_statistics(connection)
         return connection
-    except Error as e:
-        print(f"Error connecting to MySQL: {e}")
+    except sqlite3.Error as e:
+        print(f"Error connecting to SQLite: {e}")
         return None
     
 
@@ -78,7 +175,7 @@ def execute_insert(query, params):
             cursor.execute(query, params)
             connection.commit()
             print("Insert successful.")
-        except Error as e:
+        except sqlite3.Error as e:
             print(f"Error executing insert: {e}")
         finally:
             cursor.close()
@@ -103,14 +200,13 @@ def insert_into_player_identifying_information(pii):
 def insert_into_career_statistics(career_stats):
     query = """
     INSERT INTO career_statistics (sets_played, kills, kills_per_set, 
-    errs, total_attempts, attack_percentage, assits, 
+    errs, total_attempts, attack_percentage, assists, 
     assists_per_set, serve_aces, serve_errors, serve_aces_per_set, 
     reception_errors, digs, digs_per_set, block_solos, block_assists, 
     blk, blk_per_s, block_errors, ball_handling_errors, points, pii_id)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 
     ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """
-
     params = (
         career_stats.sets_played,
         career_stats.kills,
@@ -118,7 +214,7 @@ def insert_into_career_statistics(career_stats):
         career_stats.errs,
         career_stats.total_attempts,
         career_stats.attack_percentage,
-        career_stats.assits,
+        career_stats.assists,
         career_stats.assists_per_set,
         career_stats.serve_aces,
         career_stats.serve_errors,
@@ -136,13 +232,14 @@ def insert_into_career_statistics(career_stats):
         career_stats.pii_id
     )
     execute_insert(query, params)
+    return print("Career statistics inserted successfully")
 
 
 def insert_game_statistics(game_stats):
     query = """
         INSERT INTO game_statistics (
             game_date, opponent, sets_played, kills, errs,
-            total_attempts, attack_percentage, assits,
+            total_attempts, attack_percentage, assists,
             serve_aces, serve_errors, reception_errors,
             digs, block_solos, block_assists,
             block_errors, ball_handling_errors, total_blocks,
@@ -171,7 +268,9 @@ def insert_game_statistics(game_stats):
         game_stats.total_blocks,
         game_stats.pii_id
     )
-    return execute_insert(query, params)
+
+    execute_insert(query, params)
+    return print("Game statistics inserted successfully")
 
 
 def execute_read(query, params):
@@ -182,7 +281,7 @@ def execute_read(query, params):
             cursor.execute(query, params)
             results = cursor.fetchall()
             return results
-        except Error as e:
+        except sqlite3.Error as e:
             print(f"Error executing read: {e}")
             return None
         finally:
@@ -200,7 +299,7 @@ def get_player_id_by_information(pii):
     params = (pii.first_name, pii.last_name, pii.school)
     results = execute_read(query, params)
     if results:
-        return results[0]["pii_id"]
+        return results[0][0]
     else:
         print("No player found with the given information.")
         return None
@@ -226,7 +325,7 @@ def execute_update(query, params):
             cursor.execute(query, params)
             connection.commit()
             print("Update successful.")
-        except Error as e:
+        except sqlite3.Error as e:
             print(f"Error executing update: {e}")
         finally:
             cursor.close()
@@ -241,37 +340,87 @@ def update_player_school(pii_id, new_school):
 
 def update_career_statistics(career_stats):
     query = """
-    UPDATE career_statistics 
-    SET sets_played = ?, kills = ?, kills_per_set = ?, 
-    errs = ?, total_attempts = ?, attack_percentage = ?, assits = ?, 
-    assists_per_set = ?, serve_aces = ?, serve_errors = ?, serve_aces_per_set = ?, 
-    reception_errors = ?, digs = ?, digs_per_set = ?, block_solos = ?, block_assists = ?, 
-    blk = ?, blk_per_s = ?, block_errors = ?, ball_handling_errors = ?, points = ?
-    WHERE player_id = ? AND piid_id = ?
+    UPDATE career_statistics SET 
+    sets_played = ?, 
+    kills = ?, 
+    kills_per_set = ?, 
+    errs = ?, 
+    total_attempts = ?, 
+    attack_percentage = ?, 
+    assists = ?, 
+    assists_per_set = ?, 
+    serve_aces = ?, 
+    serve_errors = ?, 
+    serve_aces_per_set = ?, 
+    reception_errors = ?, 
+    digs = ?, 
+    digs_per_set = ?, 
+    block_solos = ?, 
+    block_assists = ?, 
+    blk = ?, 
+    blk_per_s = ?, 
+    block_errors = ?, 
+    ball_handling_errors = ?, 
+    points = ?
+    WHERE player_id = ? AND pii_id = ?
     """
-    params = (career_stats.sets_played, career_stats.kills, career_stats.kills_per_set, career_stats.errs, career_stats.total_attempts, career_stats.attack_percentage, career_stats.assists,
-              career_stats.assists_per_set, career_stats.serve_aces, career_stats.serve_errors, career_stats.serve_aces_per_set, career_stats.reception_errors, career_stats.digs,
-              career_stats.digs_per_set, career_stats.block_solos, career_stats.block_assists, career_stats.blk, career_stats.blk_per_s, career_stats.block_errors,
-              career_stats.ball_handling_errors, career_stats.points, career_stats.player_id, career_stats.pii_id)
+    params = (career_stats.sets_played, 
+              career_stats.kills, 
+              career_stats.kills_per_set, 
+              career_stats.errs, 
+              career_stats.total_attempts, 
+              career_stats.attack_percentage, 
+              career_stats.assists,
+              career_stats.assists_per_set, 
+              career_stats.serve_aces, 
+              career_stats.serve_errors, 
+              career_stats.serve_aces_per_set, 
+              career_stats.reception_errors, 
+              career_stats.digs,
+              career_stats.digs_per_set, 
+              career_stats.block_solos, 
+              career_stats.block_assists, 
+              career_stats.blk, 
+              career_stats.blk_per_s, 
+              career_stats.block_errors,
+              career_stats.ball_handling_errors, 
+              career_stats.points, 
+              career_stats.player_id, 
+              career_stats.pii_id
+              )
     execute_update(query, params)
 
 def update_game_statistics(game_stats):
     query = """
         UPDATE game_statistics
         SET game_date = ?, opponent = ?, sets_played = ?, kills = ?, errs = ?,
-            total_attempts = ?, attack_percentage = ?, assits = ?,
+            total_attempts = ?, attack_percentage = ?, assists = ?,
             serve_aces = ?, serve_errors = ?, reception_errors = ?,
             digs = ?, block_solos = ?, block_assists = ?,
             block_errors = ?, ball_handling_errors = ?, total_blocks = ?
-        WHERE piid_id = ? AND game_date = ? AND opponent = ?
+        WHERE pii_id = ? AND game_date = ? AND opponent = ?
     """
     params = (
-        game_stats.game_date, game_stats.opponent, game_stats.sets_played, game_stats.kills, game_stats.errs,
-        game_stats.total_attempts, game_stats.attack_percentage, game_stats.assists,
-        game_stats.serve_aces, game_stats.serve_errors, game_stats.reception_errors,
-        game_stats.digs, game_stats.block_solos, game_stats.block_assists,
-        game_stats.block_errors, game_stats.ball_handling_errors, game_stats.total_blocks,
-        game_stats.pii_id, game_stats.game_date, game_stats.opponent
+        game_stats.game_date, 
+        game_stats.opponent, 
+        game_stats.sets_played, 
+        game_stats.kills, 
+        game_stats.errs,
+        game_stats.total_attempts, 
+        game_stats.attack_percentage, 
+        game_stats.assists,
+        game_stats.serve_aces, 
+        game_stats.serve_errors, 
+        game_stats.reception_errors,
+        game_stats.digs, 
+        game_stats.block_solos, 
+        game_stats.block_assists,
+        game_stats.block_errors, 
+        game_stats.ball_handling_errors, 
+        game_stats.total_blocks,
+        game_stats.pii_id, 
+        game_stats.game_date, 
+        game_stats.opponent
     )
     execute_update(query, params)
 
@@ -283,7 +432,7 @@ def execute_delete(query, params):
             cursor.execute(query, params)
             connection.commit()
             print("Delete successful.")
-        except Error as e:
+        except sqlite3.Error as e:
             print(f"Error executing delete: {e}")
         finally:
             cursor.close()
@@ -296,11 +445,11 @@ def delete_player_by_id(pii_id):
     execute_delete(query, (pii_id,))
 
 def delete_career_statistics_by_player_id(pii_id):
-    query = "DELETE FROM career_statistics WHERE piid_id = ?"
+    query = "DELETE FROM career_statistics WHERE pii_id = ?"
     execute_delete(query, (pii_id,))
 
 def delete_game_statistics_by_player_id_and_game_date(pii_id, game_date):
-    query = "DELETE FROM game_statistics WHERE piid_id = ? AND game_date = ?"
+    query = "DELETE FROM game_statistics WHERE pii_id = ? AND game_date = ?"
     params = (pii_id, game_date)
     execute_delete(query, params)
 
@@ -326,7 +475,7 @@ if conn is not None:
 # PlayerIdentifyingInformation1 = PlayerIdentifyingInformation(pii_id=None, first_name="Jane", last_name="Doe", school="University B")
 # insert_into_player_identifying_information(PlayerIdentifyingInformation1)
 
-# career_stats = CareerStatistics(player_id=1, sets_played=100, kills=500, kills_per_set=5.0, errs=50, total_attempts=1000, attack_percentage=0.45, assits=200,
+# career_stats = CareerStatistics(player_id=1, sets_played=100, kills=500, kills_per_set=5.0, errs=50, total_attempts=1000, attack_percentage=0.45, assists=200,
 #               assists_per_set=2.0, serve_aces=30, serve_errors=10, serve_aces_per_set=0.3, reception_errors=20, digs=150,
 #               digs_per_set=1.5, block_solos=10, block_assists=40, blk=50, blk_per_s=0.5, block_errors=5, ball_handling_errors=15, points=600, pii_id=1)
 # insert_into_career_statistics(career_stats)
