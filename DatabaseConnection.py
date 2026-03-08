@@ -8,6 +8,10 @@ class PlayerIdentifyingInformation:
     first_name: str
     last_name: str
     school: str
+    hometown: str
+    eligibility: str
+    position: str
+    height: str
 
 @dataclass
 class CareerStatistics:
@@ -186,13 +190,13 @@ def execute_insert(query, params):
     
 def insert_into_player_identifying_information(pii):
     query = """
-    INSERT INTO player_identifying_information (first_name, last_name, school)
-    VALUES (?, ?, ?)
+    INSERT INTO player_identifying_information (first_name, last_name, school, hometown, eligibility, position, height)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
     """
     params = (
         pii.first_name, 
         pii.last_name, 
-        pii.school
+        pii.school, pii.hometown, pii.eligibility, pii.position, pii.height
         )
     execute_insert(query, params)
     return print("Player identifying information inserted successfully")
