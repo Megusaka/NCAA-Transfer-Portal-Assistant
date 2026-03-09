@@ -38,6 +38,7 @@ def favorites():
     return render_template("favorites.html", all_data=favorite_players)
 
 
+
 # @app.route("/player/<int:pii_id>")  #detail view page, show graphs and game stats in future
 # def player_detail(pii_id):
 
