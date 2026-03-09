@@ -31,7 +31,7 @@ def index():
     players = db.get_all_player_data()
     
     for player in players:
-        pii_id = player["pii_id"]
+        pii_id = player[0]
 
         career_stats = db.get_career_statistics_by_pii_id(pii_id)
         for stat in career_stats:
