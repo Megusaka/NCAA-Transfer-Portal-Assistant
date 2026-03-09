@@ -27,16 +27,15 @@
 
 <table>
 <tr>
-    <th>Name</th><th>School</th><th>Hometown</th><th>Eligibility</th><th>Position</th><th>Height</th>
+    <th>Name</th><th>School</th><th>Sets Played</th><th>Kills</th><th>Assists Per Set</th>
 </tr>
-{% for player in player_summary %}
+{% for player in all_data %}
 <tr>
     <td>{{ player.identifying.first_name }} {{ player.identifying.last_name }}</td>
     <td>{{ player.identifying.school }}</td>
-    <td>{{ player.identifying.hometown }}</td>
-    <td>{{ player.identifying.eligibility }}</td>
-    <td>{{ player.identifying.position }}</td>
-    <td>{{ player.identifying.height }}</td>
+    <td>{{ player.career.sets_played or '' }}</td>
+    <td>{{ player.career.kills or '' }}</td>
+    <td>{{ player.career.assists_per_set or '' }}</td>
 </tr>
 {% endfor %}
 </table>

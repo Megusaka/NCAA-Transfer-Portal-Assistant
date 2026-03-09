@@ -210,13 +210,13 @@ def percent_of_games_played(games):
     
     return pct_played, pct_not_played
 
-# plot_stat_over_games(test_games, 'kills')
+#plot_stat_over_games(test_games, 'kills')
 
 # x, y = trend_percentages(test_games, 'kills')
 # print(f"Kill increases: {x:.2f}%")
 # print(f"Kill decreases: {y:.2f}%")
 
-# a, b = percent_of_games_played(test_games)
-# print(f"Games played: {a:.2f}%")
-# print(f"Games not played: {b:.2f}%")
+a, b = percent_of_games_played(test_games)
+print(f"Games played: {a:.2f}%")
+print(f"Games not played: {b:.2f}%")
 
