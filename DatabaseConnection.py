@@ -158,6 +158,7 @@ def get_db_connection():
     db_filepath = "transferPortalAssistant.db"
     try:
         connection = sqlite3.connect(db_filepath)
+        connection.row_factory = sqlite3.Row
         create_table_if_not_exists_player_identifying_information(connection)
         create_table_if_not_exists_career_statistics(connection)
         create_table_if_not_exists_game_statistics(connection)

@@ -40,7 +40,7 @@ def index():
         if career_stats:
             career_dict = career_stats[0]
         else:
-            None
+            career_dict = {}
         
         all_data.append({
              "identifying" : player,
