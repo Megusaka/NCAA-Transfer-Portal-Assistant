@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 import DatabaseConnection as db
 import playerScraperWorking as player_scraper
-import careerStatScraper as career_stat_scraper
 
 
 app = Flask(__name__)
@@ -9,28 +8,33 @@ app = Flask(__name__)
 @app.route("/", methods=["GET", "POST"])
 def index():
     player_summary = []
-    player_career_stats = []
     if request.method == "POST":
         first_name = request.form.get("first_name")
         last_name = request.form.get("last_name")
         school = request.form.get("school")
 
-        player_data = player_scraper.scrape_player(first_name, last_name, school)
+        player_data = player_scraper.scrape_roster(first_name, last_name, school)
         if player_data:
             pii = db.PlayerIdentifyingInformation(
                 pii_id=None,
-                first_name=player_data["identifying"]["first_name"],
-                last_name=player_data["identifying"]["last_name"],
-                school=player_data["identifying"]["school"],
-                hometown=player_data["identifying"]["hometown"],
-                eligibility=player_data["identifying"]["eligibility"],
-                position=player_data["identifying"]["position"],
-                height=player_data["identifying"]["height"]
+                first_name=player_data["first_name"],
+                last_name=player_data["last_name"],
+                school=player_data["school"],
+                hometown=player_data["hometown"],
+                eligibility=player_data["eligibility"],
+                position=player_data["position"],
+                height=player_data["height"]
             )
             db.insert_into_player_identifying_information(pii)
             player_summary.append(player_data)
             
     return render_template("index.html", player_summary=player_summary)
+
+@app.route("/player_stats",methods=["GET", "POST"])
+def player_career_stats():
+
+@app.route("/player_gameByGame_stats", methods=["GET", "POST"])
+def player_match_stats():   
 
 @app.route("/favorites")
 def favorites():
