@@ -91,7 +91,7 @@ def school_grab(school):
 #adding the url functions to get a working url plug and play
 #issue with the array
 def get_valid_roster_url():
-        current_year = datetime.datetime.now().year
+        current_year = datetime.now().year
         school = school_grab()
         roster_url_working = f"{school}/sports/womens-volleyball/roster/{current_year}"
         if requests.get(roster_url_working).status_code == 200:
@@ -100,7 +100,7 @@ def get_valid_roster_url():
 
 #i should ba able to pull both career stats and game by game stats from this url nested 
 def get_working_carrer_stats_url():
-        current_year = datetime.datetime.now().year
+        current_year = datetime.now().year
         school = school_grab() 
         career_stats_working = f"{school}/sports/womens-volleyball/stats/{current_year}"
         if requests.get(career_stats_working).status_code == 200:
@@ -114,8 +114,9 @@ def scrape_roster(first_name, last_name, school):
 
     first = first_name.strip().lower()
     last = last_name.strip().lower()
+    school = school_grab()
 
-    url = get_valid_roster_url()
+    url = get_valid_roster_url(school)
 
     response = requests.get(url)
     soup = BeautifulSoup(response.content, "html.parser")
@@ -140,7 +141,7 @@ def scrape_roster(first_name, last_name, school):
                 return {
                     "first_name": first_name,
                     "last_name": last_name,
-                    "school": school,
+                    #"school": school,
                     "hometown": hometown_tag.get_text(strip=True) if hometown_tag else "N/A",
                     "eligibility": eligibility_tag.get_text(strip=True) if eligibility_tag else "N/A",
                     "position": position_tag.get_text(strip=True) if position_tag else "N/A",
@@ -151,7 +152,7 @@ def scrape_roster(first_name, last_name, school):
         else: 
             return("player not found.")
     #in the documentation
-    summary_complete = player_summary.append(raw_name, school, hometown_tag, eligibility_tag, position_tag, height_tag)
+    summary_complete = player_summary.append(raw_name, hometown_tag, eligibility_tag, position_tag, height_tag) #school?
     
     return summary_complete
 
@@ -162,17 +163,19 @@ def scrape_player_career_stats(first_name, last_name, school):
 
     first = first_name.strip().lower()
     last = last_name.strip().lower()
+    school = school_grab()
 
-    url = get_working_carrer_stats_url()
+    url = get_working_carrer_stats_url(school)
 
     response = requests.get(url)
     soup = BeautifulSoup(response.content, "html.parser")
 
-    offensive = soup.find_all("side-arm-primary", id = "individual-overall-offensive") 
-    defensive = soup.find_all("side-arm-primary", id = "induvidual-overall-defensive")
     #getting confused with reading the html for which class name actually needs to be pulled?
     #from documentation : soup.find_all("a", class_="sister")
     #how to identify parent and sibiling tag for beatiful soup raw html?
+    offensive = soup.find_all("side-arm-primary", id = "individual-overall-offensive") 
+    defensive = soup.find_all("side-arm-primary", id = "induvidual-overall-defensive")
+
     #look into documentation for the anwser to scraping table and classes specifics
     for o in offensive: 
         SP_tag =o.select_one("text-center")
@@ -265,8 +268,9 @@ def scrape_player_match_played(first_name, last_name, school):
 
     first = first.strip().lower()
     last = last.strip().lower()
+    school = school_grab()
 
-    url = get_working_carrer_stats_url()
+    url = get_working_carrer_stats_url(school)
 
     response = requests.get(url)
     soup = BeautifulSoup(response.content, "html.parser")

@@ -13,10 +13,13 @@ def index():
         last_name = request.form.get("last_name")
         school = request.form.get("school")
 
-        player_data = player_scraper.scrape_roster(first_name, last_name, school)
-        return player_data
+        school_seleceted = player_scraper.school_grab(school)
+        player_data = player_scraper.scrape_roster(first_name, last_name)
+        #how would i do this for all the scrape so the user only needs to input it once?
+
+        return school_seleceted, player_data
             
-        #should i put the append function here?
+    #should i put the append function here?
     #i return summary complete in the scrapeing is thta going to cause issues?
     #what if i have two different arrays doing the exact same thing one was in the scrape one is in the app where does it need to be? 
     return render_template("index.html", summary_complete = summary_complete)
@@ -24,11 +27,16 @@ def index():
 #do i really need these other pages for the display because this is currently scrape i can just call from the functions to make it more 
 #convenent for when and where to display data 
 
-#@app.route("/player_stats",methods=["GET", "POST"])
-#def player_career_stats():
+@app.route("/player_stats",methods=["GET", "POST"])
+def player_career_stats():
+    player_details = []
+    if request.method == "POST":
+        player_stats = player_scraper.scrape_player_career_stats()
+        player_games_played = player_scraper.scrape_player_match_played()
 
-#@app.route("/player_gameByGame_stats", methods=["GET", "POST"])
-#def player_match_stats():   
+        return player_stats, player_games_played
+    
+    return render_template("player_detail.html", player_details = player_details)
 
 @app.route("/favorites")
 def favorites():
