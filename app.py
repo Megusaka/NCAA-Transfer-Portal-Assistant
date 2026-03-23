@@ -7,34 +7,28 @@ app = Flask(__name__)
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    player_summary = []
+    summary_complete = []
     if request.method == "POST":
         first_name = request.form.get("first_name")
         last_name = request.form.get("last_name")
         school = request.form.get("school")
 
         player_data = player_scraper.scrape_roster(first_name, last_name, school)
-        if player_data:
-            pii = db.PlayerIdentifyingInformation(
-                pii_id=None,
-                first_name=player_data["first_name"],
-                last_name=player_data["last_name"],
-                school=player_data["school"],
-                hometown=player_data["hometown"],
-                eligibility=player_data["eligibility"],
-                position=player_data["position"],
-                height=player_data["height"]
-            )
-            db.insert_into_player_identifying_information(pii)
-            player_summary.append(player_data)
+        return player_data
             
-    return render_template("index.html", player_summary=player_summary)
+        #should i put the append function here?
+    #i return summary complete in the scrapeing is thta going to cause issues?
+    #what if i have two different arrays doing the exact same thing one was in the scrape one is in the app where does it need to be? 
+    return render_template("index.html", summary_complete = summary_complete)
 
-@app.route("/player_stats",methods=["GET", "POST"])
-def player_career_stats():
+#do i really need these other pages for the display because this is currently scrape i can just call from the functions to make it more 
+#convenent for when and where to display data 
 
-@app.route("/player_gameByGame_stats", methods=["GET", "POST"])
-def player_match_stats():   
+#@app.route("/player_stats",methods=["GET", "POST"])
+#def player_career_stats():
+
+#@app.route("/player_gameByGame_stats", methods=["GET", "POST"])
+#def player_match_stats():   
 
 @app.route("/favorites")
 def favorites():
