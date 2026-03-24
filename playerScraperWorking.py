@@ -70,7 +70,7 @@ def school_grab(school):
     eastern_new_mexico = "https://goeasternathletics.com"
     sul_ross_state = "https://srlobos.com"
 
-    school = ""
+    #school = ""
 
     school_options = {
         "black_hills_state": black_hills_state,
@@ -123,15 +123,20 @@ def school_grab(school):
     
     match = False
     while match == False:
+        error = f"school is {school}"
+        print(error)
+        
         if school in school_options:
-            match == True
+            match = True
+            print("school found")
+            break
         else:
-         print("team website not found")
+            print("team website not found")
 
     if match == True:
         return school_options[school]
     else:
-        print("error in accessing the website").exit()
+        print("error in accessing the website")
 
 
 #adding the url functions to get a working url plug and play
@@ -160,7 +165,7 @@ def scrape_roster(first_name, last_name, school):
 
     first = first_name.strip().lower()
     last = last_name.strip().lower()
-    school = school_grab()
+    school = school_grab(school)
 
     url = get_valid_roster_url(school)
 
