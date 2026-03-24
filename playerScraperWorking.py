@@ -4,8 +4,16 @@
 # # https://www.crummy.com/software/BeautifulSoup/bs4/doc/
 # # https://scrapingant.com/blog/beautifulsoup-cheatsheet
 # # https://www.geeksforgeeks.org/python/find-the-siblings-of-tags-using-beautifulsoup/
+# # https://www.scraperapi.com/web-scraping/python/
+# # https://docs.python.org/3.13/
+# # 
 #app integration 
 # # https://medium.com/@partner0307/python-web-scraping-with-flask-a-step-by-step-guide-a0ef33883894
+#scrape from a nested table 
+# # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_html.html
+# #https://stackoverflow.com/questions/67113087/beautifulsoup-scrape-tags-with-same-class-name
+# #look into RE for structure data scrape
+
 
 import pandas as pd
 from datetime import datetime
@@ -22,6 +30,7 @@ def full_name(first_name, last_name):
     
 #issue here with the getting the access to the array 
 #will need to match up the varible name when spinner is added
+#looked into both two options a using a dicionary or an array nothing works with either 
 def school_grab(school):
     #RMAC TEAMS
     black_hills_state= "https://bhsuathletics.com" 
@@ -63,6 +72,44 @@ def school_grab(school):
 
     school = ""
 
+    school_options = {
+        "black_hills_state": black_hills_state,
+        "chadron_state": chadron_state,
+        "colorado_christian": colorado_christian,
+        "mesa": mesa,
+        "mines": mines,
+        "pueblo": pueblo,
+        "fort_lewis": fort_lewis,
+        "msu_denver": msu_denver,
+        "regis": regis,
+        "south_dakota_mines": south_dakota_mines,
+        "uccs": uccs,
+        "western": western,
+        "westminster": westminster,
+        "new_mexico_highlands": new_mexico_highlands,
+        "adams": adams,
+
+        # LONE STAR TEAMS
+        "angelo_state": angelo_state,
+        "lubbock_christian": lubbock_christian,
+        "west_texas_aandm": west_texas_aandm,
+        "st_marys": st_marys,
+        "ut_tyler": ut_tyler,
+        "texas_womans": texas_womans,
+        "oklahoma_christian": oklahoma_christian,
+        "texas_kingsville_aandm": texas_kingsville_aandm,
+        "midwestern": midwestern,
+        "ut_permian": ut_permian,
+        "st_edwards": st_edwards,
+        "ut_dallas": ut_dallas,
+        "dallas_baptist_dbu": dallas_baptist_dbu,
+        "western_new_mexico": western_new_mexico,
+        "cameron": cameron,
+        "texas_international_aandm": texas_international_aandm,
+        "eastern_new_mexico": eastern_new_mexico,
+        "sul_ross_state": sul_ross_state
+    }
+
     #name it school to match the call from app or maybe switch it so there isn't problems?
     #normalizing the input to match up with the url array 
     school_options = [black_hills_state, chadron_state, colorado_christian, mesa,
@@ -76,21 +123,20 @@ def school_grab(school):
     
     match = False
     while match == False:
-        school = school
         if school in school_options:
             match == True
         else:
          print("team website not found")
 
     if match == True:
-        return school
+        return school_options[school]
     else:
-        print("error in accessing the websote")
+        print("error in accessing the website").exit()
 
 
 #adding the url functions to get a working url plug and play
 #issue with the array
-def get_valid_roster_url():
+def get_valid_roster_url(school):
         current_year = datetime.now().year
         school = school_grab()
         roster_url_working = f"{school}/sports/womens-volleyball/roster/{current_year}"
@@ -99,7 +145,7 @@ def get_valid_roster_url():
         return f"{school}/sports/womens-volleyball/roster/{current_year - 1}"
 
 #i should ba able to pull both career stats and game by game stats from this url nested 
-def get_working_carrer_stats_url():
+def get_working_carrer_stats_url(school):
         current_year = datetime.now().year
         school = school_grab() 
         career_stats_working = f"{school}/sports/womens-volleyball/stats/{current_year}"
@@ -124,16 +170,16 @@ def scrape_roster(first_name, last_name, school):
     players = soup.select(".sidearm-roster-player")
 
     for p in players:
-
+        #select becasue i only want it to return one result 
         name_tag = p.select_one(".sidearm-roster-player-name")
         hometown_tag = p.select_one(".sidearm-roster-player-hometown")
         eligibility_tag = p.select_one(".sidearm-roster-player-academic-year")
         position_tag = p.select_one(".sidearm-roster-player-position-long-short")
         height_tag = p.select_one(".sidearm-roster-player-height")
-
+        
+        #the names are stored in one place and there also add the jersey numbers in that column needed data clean up 
         raw_name = name_tag.get_text(strip=True)
         raw_name = raw_name.lstrip("0123456789 ").strip()
-
         first_name, last_name = full_name(raw_name)
 
         if first_name and last_name:
@@ -141,7 +187,7 @@ def scrape_roster(first_name, last_name, school):
                 return {
                     "first_name": first_name,
                     "last_name": last_name,
-                    #"school": school,
+                    "school": school,
                     "hometown": hometown_tag.get_text(strip=True) if hometown_tag else "N/A",
                     "eligibility": eligibility_tag.get_text(strip=True) if eligibility_tag else "N/A",
                     "position": position_tag.get_text(strip=True) if position_tag else "N/A",
@@ -152,7 +198,7 @@ def scrape_roster(first_name, last_name, school):
         else: 
             return("player not found.")
     #in the documentation
-    summary_complete = player_summary.append(raw_name, hometown_tag, eligibility_tag, position_tag, height_tag) #school?
+    summary_complete = player_summary.append(raw_name,school, hometown_tag, eligibility_tag, position_tag, height_tag) 
     
     return summary_complete
 
@@ -163,7 +209,7 @@ def scrape_player_career_stats(first_name, last_name, school):
 
     first = first_name.strip().lower()
     last = last_name.strip().lower()
-    school = school_grab()
+    school = school_grab(school)
 
     url = get_working_carrer_stats_url(school)
 
@@ -171,13 +217,15 @@ def scrape_player_career_stats(first_name, last_name, school):
     soup = BeautifulSoup(response.content, "html.parser")
 
     #getting confused with reading the html for which class name actually needs to be pulled?
-    #from documentation : soup.find_all("a", class_="sister")
+    #from documentation : soup.find_all("a", class_="sister") is this better? 
     #how to identify parent and sibiling tag for beatiful soup raw html?
+    #what is the clear difference between data-binds and classes? 
     offensive = soup.find_all("side-arm-primary", id = "individual-overall-offensive") 
     defensive = soup.find_all("side-arm-primary", id = "induvidual-overall-defensive")
 
     #look into documentation for the anwser to scraping table and classes specifics
     for o in offensive: 
+        #there is only one result that needs to be returned 
         SP_tag =o.select_one("text-center")
         MP_tag = o.select_one("text-center")
         MS_tag = o.select_one("text-center")
@@ -278,20 +326,51 @@ def scrape_player_match_played(first_name, last_name, school):
     stats = soup.find_all('sorting')
 
     for s in stats: 
-        date_tag = s.select_all()
-        opponet_tag = s.select_all()
+        #it will return multiple result for a specific tag 
+        date_tag = s.select_all("text-center")
+        opponet_tag = s.select_all("text-center")
+        SP_tag = s.select_all("text-center")
+        K_tag = s.select_all("text-center")
+        E_tag = s.select_all("text-center")
+        TA_tag = s.select_all("text-center")
+        PCT_tag = s.select_all("text-center")
+        AST_tag = s.select_all("text-center")
+        SA_tag = s.select_all("text-center")
+        SE_tag = s.select_all("text-center")
+        RE_tag = s.select_all("text-center")
+        DIG_tag = s.select_all("text-center")
+        BS_tag = s.select_all("text-center")
+        BA_tag = s.select_all("text-center")
+        BE_tag = s.select_all("text-center")
+        TB_tag = s.select_all("text-center")
+        BHE_tag = s.select_all("text-center")
 
         if first_name and last_name:
             if first_name.lower() == first and last_name.lower() == last:
                 return {
                     "date": date_tag.get_text(strip=True) if date_tag else "N/A",
-                    "opponet": opponet_tag.get_text(strip=True) if opponet_tag else "N/A"
+                    "opponet": opponet_tag.get_text(strip=True) if opponet_tag else "N/A",
+                    "SP" : SP_tag.get_text(strip=True) if SP_tag else "N/A",
+                    "K" : K_tag.get_text(strip=True) if K_tag else "N/A",
+                    "E" : E_tag.get_text(strip=True) if E_tag else "N/A",
+                    "TA" : TA_tag.get_text(strip=True) if TA_tag else "N/A",
+                    "PCT" : PCT_tag.get_text(strip=True) if PCT_tag else "N/A",
+                    "AST" : AST_tag.get_text(strip=True) if AST_tag else "N/A",
+                    "SA" : SA_tag.get_text(strip=True) if SA_tag else "N/A",
+                    "SE" : SE_tag.get_text(strip=True) if SE_tag else "N/A",
+                    "RE" : RE_tag.get_text(strip=True) if RE_tag else "N/A",
+                    "DIG" : DIG_tag.get_text(strip=True) if DIG_tag else "N/A",
+                    "BS" : BS_tag.get_text(strip=True) if BS_tag else "N/A",
+                    "BA" : BA_tag.get_text(strip=True) if BA_tag else "N/A",
+                    "BE" : BE_tag.get_text(strip=True) if BE_tag else "N/A",
+                    "TB" : TB_tag.get_text(strip=True) if TB_tag else "N/A",
+                    "BHE" : BHE_tag.get_text(strip=True) if BHE_tag else "N/A",
                 }
             else:
                 return("error with getting the games player participated in")
         else:
             return("player games not found")      
     
-    games_played = player_games_played.append(date_tag, opponet_tag)
+    games_played_stats = player_games_played.append(date_tag, opponet_tag, SP_tag, K_tag,E_tag, TA_tag, PCT_tag, AST_tag, SA_tag, SE_tag, RE_tag, DIG_tag, BS_tag, BA_tag, BE_tag, TB_tag, BHE_tag)
     
-    return games_played
+    return games_played_stats

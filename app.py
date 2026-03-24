@@ -13,11 +13,12 @@ def index():
         last_name = request.form.get("last_name")
         school = request.form.get("school")
 
-        school_seleceted = player_scraper.school_grab(school)
-        player_data = player_scraper.scrape_roster(first_name, last_name)
+        player_summary = player_scraper.scrape_roster(first_name, last_name, school )
+        player_career_stats = player_scraper.scrape_player_career_stats(first_name, last_name, school)
+        player_games_played = player_scraper.scrape_player_match_played(first_name, last_name, school )
         #how would i do this for all the scrape so the user only needs to input it once?
 
-        return school_seleceted, player_data
+        return player_summary, player_career_stats, player_games_played
             
     #should i put the append function here?
     #i return summary complete in the scrapeing is thta going to cause issues?
