@@ -112,14 +112,6 @@ def school_grab(school):
 
     #name it school to match the call from app or maybe switch it so there isn't problems?
     #normalizing the input to match up with the url array 
-    school_options = [black_hills_state, chadron_state, colorado_christian, mesa,
-            mines, pueblo, fort_lewis, msu_denver, regis, south_dakota_mines,
-            uccs, western, westminster, new_mexico_highlands,adams, angelo_state,
-            lubbock_christian, west_texas_aandm, st_marys, ut_tyler, texas_womans,
-            oklahoma_christian, texas_kingsville_aandm, midwestern, ut_permian, st_edwards,
-            ut_dallas,dallas_baptist_dbu, western_new_mexico, cameron, texas_international_aandm,
-            eastern_new_mexico, sul_ross_state
-        ]
     
     match = False
     while match == False:
@@ -158,216 +150,216 @@ def get_working_carrer_stats_url(school):
             return career_stats_working
         return f"{school}/sports/womens-volleyball/stats/{current_year - 1}"
             
+def player_full_scrape(first_name, last_name, school):
+    #roster scrape starts here
+    def scrape_roster(first_name, last_name, school):
+        player_summary = []
 
-#roster scrape starts here
-def scrape_roster(first_name, last_name, school):
-    player_summary = []
+        first = first_name.strip().lower()
+        last = last_name.strip().lower()
+        school = school_grab(school)
 
-    first = first_name.strip().lower()
-    last = last_name.strip().lower()
-    school = school_grab(school)
+        url = get_valid_roster_url(school)
 
-    url = get_valid_roster_url(school)
+        response = requests.get(url)
+        soup = BeautifulSoup(response.content, "html.parser")
 
-    response = requests.get(url)
-    soup = BeautifulSoup(response.content, "html.parser")
+        players = soup.select(".sidearm-roster-player")
 
-    players = soup.select(".sidearm-roster-player")
+        for p in players:
+            #select becasue i only want it to return one result 
+            name_tag = p.select_one(".sidearm-roster-player-name")
+            hometown_tag = p.select_one(".sidearm-roster-player-hometown")
+            eligibility_tag = p.select_one(".sidearm-roster-player-academic-year")
+            position_tag = p.select_one(".sidearm-roster-player-position-long-short")
+            height_tag = p.select_one(".sidearm-roster-player-height")
+            
+            #the names are stored in one place and there also add the jersey numbers in that column needed data clean up 
+            raw_name = name_tag.get_text(strip=True)
+            raw_name = raw_name.lstrip("0123456789 ").strip()
+            first_name, last_name = full_name(raw_name)
 
-    for p in players:
-        #select becasue i only want it to return one result 
-        name_tag = p.select_one(".sidearm-roster-player-name")
-        hometown_tag = p.select_one(".sidearm-roster-player-hometown")
-        eligibility_tag = p.select_one(".sidearm-roster-player-academic-year")
-        position_tag = p.select_one(".sidearm-roster-player-position-long-short")
-        height_tag = p.select_one(".sidearm-roster-player-height")
+            if first_name and last_name:
+                if first_name.lower() == first and last_name.lower() == last:
+                    return {
+                        "first_name": first_name,
+                        "last_name": last_name,
+                        "school": school,
+                        "hometown": hometown_tag.get_text(strip=True) if hometown_tag else "N/A",
+                        "eligibility": eligibility_tag.get_text(strip=True) if eligibility_tag else "N/A",
+                        "position": position_tag.get_text(strip=True) if position_tag else "N/A",
+                        "height": height_tag.get_text(strip=True) if height_tag else "N/A"
+                    }
+                else:
+                    return("error with getting player summary.")
+            else: 
+                return("player not found.")
+        #in the documentation
+        summary_complete = player_summary.append(raw_name,school, hometown_tag, eligibility_tag, position_tag, height_tag) 
         
-        #the names are stored in one place and there also add the jersey numbers in that column needed data clean up 
-        raw_name = name_tag.get_text(strip=True)
-        raw_name = raw_name.lstrip("0123456789 ").strip()
-        first_name, last_name = full_name(raw_name)
+        return summary_complete
 
-        if first_name and last_name:
-            if first_name.lower() == first and last_name.lower() == last:
-                return {
-                    "first_name": first_name,
-                    "last_name": last_name,
-                    "school": school,
-                    "hometown": hometown_tag.get_text(strip=True) if hometown_tag else "N/A",
-                    "eligibility": eligibility_tag.get_text(strip=True) if eligibility_tag else "N/A",
-                    "position": position_tag.get_text(strip=True) if position_tag else "N/A",
-                    "height": height_tag.get_text(strip=True) if height_tag else "N/A"
-                }
+
+    def scrape_player_career_stats(first_name, last_name, school):
+        player_career_O_stats = []
+        player_career_D_stats = []
+
+        first = first_name.strip().lower()
+        last = last_name.strip().lower()
+        school = school_grab(school)
+
+        url = get_working_carrer_stats_url(school)
+
+        response = requests.get(url)
+        soup = BeautifulSoup(response.content, "html.parser")
+
+        #getting confused with reading the html for which class name actually needs to be pulled?
+        #from documentation : soup.find_all("a", class_="sister") is this better? 
+        #how to identify parent and sibiling tag for beatiful soup raw html?
+        #what is the clear difference between data-binds and classes? 
+        offensive = soup.find_all("side-arm-primary", id = "individual-overall-offensive") 
+        defensive = soup.find_all("side-arm-primary", id = "induvidual-overall-defensive")
+
+        #look into documentation for the anwser to scraping table and classes specifics
+        for o in offensive: 
+            #there is only one result that needs to be returned 
+            SP_tag =o.select_one("text-center")
+            K_tag = o.select_one("text-center")
+            KS_tag = o.select_one("text-center")
+            E_tag = o.select_one("text-center")
+            TA_tag = o.select_one("text-center")
+            PCT_tag = o.select_one("text-center")
+            A_tag = o.select_one("text-center")
+            AS_tag = o.select_one("text-center")
+            SA_tag = o.select_one("text-center")
+            SAS_tag = o.select_one("text-center")
+            SE_tag = o.select_one("text-center")
+            PTS_tag = o.select_one("text-center")
+
+            if first_name and last_name:
+                if first_name.lower() == first and last_name.lower() == last:
+                    return {
+                        "sets_played" : SP_tag.get_text(strip=True) if SP_tag else "N/A",
+                        "kills" : K_tag.get_text(strip=True) if K_tag else "N/A",
+                        "kills_per_set" : KS_tag.get_text(strip=True) if KS_tag else "N/A",
+                        "errs" : E_tag.get_text(strip=True) if E_tag else "N/A",
+                        "total_attempts" : TA_tag.get_text(strip=True) if TA_tag else "N/A",
+                        "attack_percentage" : PCT_tag.get_text(strip=True) if PCT_tag else "N/A",
+                        "assists" : A_tag.get_text(strip=True) if A_tag else "N/A",
+                        "assists_per_set" : AS_tag.get_text(strip=True) if AS_tag else "N/A",
+                        "service_aces" : SA_tag.get_text(strip=True) if SA_tag else "N/A",
+                        "service_aces_per_set" : SAS_tag.get_text(strip=True) if SAS_tag else "N/A",
+                        "serve_errors" : SE_tag.get_text(strip=True) if SE_tag else "N/A",
+                        "points" : PTS_tag.get_text(string=True) if PTS_tag else "N/A",
+                    }
+                else:
+                    return("error with player's offensive stats")
+            else: 
+                return("offensive stats not found")
+            
+        offensive_scrape = player_career_O_stats.append(SP_tag, K_tag, KS_tag, E_tag, PCT_tag, A_tag, AS_tag, SA_tag, SAS_tag, SE_tag, PTS_tag)
+
+        for d in defensive:
+            SP_tag = d.select_one("text_center")
+            RE_tag = d.select_one("text_center")
+            Dig_tag = d.select_one("text_center")
+            Dig_s_tag = d.select_one("text_center")
+            TA_tag = d.select_one("text_center")
+            Rec_tag = d.select_one("text_center")
+            RE_s_tag = d.select_one("text_center")
+            BS_tag = d.select_one("text_center")
+            BA_tag = d.select_one("text_center")
+            BLK_tag = d.select_one("text_center")
+            BLK_S_tag = d.select_one("text_center")
+            BE_tag = d.select_one("text_center")
+            BHE_tag = d.select_one("text_center")
+
+            if first_name and last_name:
+                if first_name.lower() == first and last_name.lower() == last:
+                    return {
+                        "sets_played_defense" : SP_tag.get_text(strip=True) if SP_tag else "N/A",
+                        "reception_errors" : RE_tag.get_text(strip=True) if RE_tag else "N/A",
+                        "digs" : Dig_tag.get_text(strip=True) if Dig_tag else "N/A",
+                        "digs_per_set" : Dig_s_tag.get_text(strip=True) if Dig_s_tag else "N/A",
+                        "blocks_solos" : BS_tag.get_text(strip=True) if BS_tag else "N/A",
+                        "block_assists" : BA_tag.get_text(strip=True) if BA_tag else "N/A",
+                        "blk" :BLK_tag.get_text(strip=True) if BLK_tag else "N/A",
+                        "blk_per_s" : BLK_S_tag.get_text(strip=True) if BLK_S_tag else "N/A",
+                        "block_errors" : BE_tag.get_text(strip=True) if BE_tag else "N/A",
+                        "ball_handling_errors" : BHE_tag.get_text(strip=True) if BHE_tag else "N/A",
+                    }
+                else:
+                    return("error with players defensive stats")
             else:
-                return("error with getting player summary.")
-        else: 
-            return("player not found.")
-    #in the documentation
-    summary_complete = player_summary.append(raw_name,school, hometown_tag, eligibility_tag, position_tag, height_tag) 
-    
-    return summary_complete
+                return ("defensive stats not found")
+            
+        defensive_scrape = player_career_D_stats.append(SP_tag, Dig_tag,Dig_s_tag,RE_tag, TA_tag, Rec_tag, RE_s_tag, BS_tag,BA_tag,BLK_tag,BLK_S_tag,BE_tag,BHE_tag)
 
 
-def scrape_player_career_stats(first_name, last_name, school):
-    player_career_O_stats = []
-    player_career_D_stats = []
+        return defensive_scrape , offensive_scrape
 
-    first = first_name.strip().lower()
-    last = last_name.strip().lower()
-    school = school_grab(school)
+    def scrape_player_match_played(first_name, last_name, school):
+        #need to add the scrape that pull from nested nested table that is name specific 
+        #will need to add a for lopp to pull all the data that is stored 
+        player_games_played = []
 
-    url = get_working_carrer_stats_url(school)
+        first = first.strip().lower()
+        last = last.strip().lower()
+        school = school_grab()
 
-    response = requests.get(url)
-    soup = BeautifulSoup(response.content, "html.parser")
+        url = get_working_carrer_stats_url(school)
 
-    #getting confused with reading the html for which class name actually needs to be pulled?
-    #from documentation : soup.find_all("a", class_="sister") is this better? 
-    #how to identify parent and sibiling tag for beatiful soup raw html?
-    #what is the clear difference between data-binds and classes? 
-    offensive = soup.find_all("side-arm-primary", id = "individual-overall-offensive") 
-    defensive = soup.find_all("side-arm-primary", id = "induvidual-overall-defensive")
+        response = requests.get(url)
+        soup = BeautifulSoup(response.content, "html.parser")
 
-    #look into documentation for the anwser to scraping table and classes specifics
-    for o in offensive: 
-        #there is only one result that needs to be returned 
-        SP_tag =o.select_one("text-center")
-        K_tag = o.select_one("text-center")
-        KS_tag = o.select_one("text-center")
-        E_tag = o.select_one("text-center")
-        TA_tag = o.select_one("text-center")
-        PCT_tag = o.select_one("text-center")
-        A_tag = o.select_one("text-center")
-        AS_tag = o.select_one("text-center")
-        SA_tag = o.select_one("text-center")
-        SAS_tag = o.select_one("text-center")
-        SE_tag = o.select_one("text-center")
-        PTS_tag = o.select_one("text-center")
+        stats = soup.find_all('sorting')
 
-        if first_name and last_name:
-            if first_name.lower() == first and last_name.lower() == last:
-                return {
-                    "sets_played" : SP_tag.get_text(strip=True) if SP_tag else "N/A",
-                    "kills" : K_tag.get_text(strip=True) if K_tag else "N/A",
-                    "kills_per_set" : KS_tag.get_text(strip=True) if KS_tag else "N/A",
-                    "errs" : E_tag.get_text(strip=True) if E_tag else "N/A",
-                    "total_attempts" : TA_tag.get_text(strip=True) if TA_tag else "N/A",
-                    "attack_percentage" : PCT_tag.get_text(strip=True) if PCT_tag else "N/A",
-                    "assists" : A_tag.get_text(strip=True) if A_tag else "N/A",
-                    "assists_per_set" : AS_tag.get_text(strip=True) if AS_tag else "N/A",
-                    "service_aces" : SA_tag.get_text(strip=True) if SA_tag else "N/A",
-                    "service_aces_per_set" : SAS_tag.get_text(strip=True) if SAS_tag else "N/A",
-                    "serve_errors" : SE_tag.get_text(strip=True) if SE_tag else "N/A",
-                    "points" : PTS_tag.get_text(string=True) if PTS_tag else "N/A",
-                }
+        for s in stats: 
+            #it will return multiple result for a specific tag 
+            date_tag = s.select_all("text-center")
+            opponet_tag = s.select_all("text-center")
+            SP_tag = s.select_all("text-center")
+            K_tag = s.select_all("text-center")
+            E_tag = s.select_all("text-center")
+            TA_tag = s.select_all("text-center")
+            PCT_tag = s.select_all("text-center")
+            AST_tag = s.select_all("text-center")
+            SA_tag = s.select_all("text-center")
+            SE_tag = s.select_all("text-center")
+            RE_tag = s.select_all("text-center")
+            DIG_tag = s.select_all("text-center")
+            BS_tag = s.select_all("text-center")
+            BA_tag = s.select_all("text-center")
+            BE_tag = s.select_all("text-center")
+            TB_tag = s.select_all("text-center")
+            BHE_tag = s.select_all("text-center")
+
+            if first_name and last_name:
+                if first_name.lower() == first and last_name.lower() == last:
+                    return {
+                        "game_date": date_tag.get_text(strip=True) if date_tag else "N/A",
+                        "opponet": opponet_tag.get_text(strip=True) if opponet_tag else "N/A",
+                        "sets_played" : SP_tag.get_text(strip=True) if SP_tag else "N/A",
+                        "kills" : K_tag.get_text(strip=True) if K_tag else "N/A",
+                        "errs" : E_tag.get_text(strip=True) if E_tag else "N/A",
+                        "total_attempts" : TA_tag.get_text(strip=True) if TA_tag else "N/A",
+                        "attack_percentage" : PCT_tag.get_text(strip=True) if PCT_tag else "N/A",
+                        "assists" : AST_tag.get_text(strip=True) if AST_tag else "N/A",
+                        "service_aces" : SA_tag.get_text(strip=True) if SA_tag else "N/A",
+                        "service_errors" : SE_tag.get_text(strip=True) if SE_tag else "N/A",
+                        "reception_errors" : RE_tag.get_text(strip=True) if RE_tag else "N/A",
+                        "dings" : DIG_tag.get_text(strip=True) if DIG_tag else "N/A",
+                        "block_solos" : BS_tag.get_text(strip=True) if BS_tag else "N/A",
+                        "block_assists" : BA_tag.get_text(strip=True) if BA_tag else "N/A",
+                        "block_errors" : BE_tag.get_text(strip=True) if BE_tag else "N/A",
+                        "total_blocks" : TB_tag.get_text(strip=True) if TB_tag else "N/A",
+                        "ball_handling_errors" : BHE_tag.get_text(strip=True) if BHE_tag else "N/A",
+                    }
+                else:
+                    return("error with getting the games player participated in")
             else:
-                return("error with player's offensive stats")
-        else: 
-            return("offensive stats not found")
+                return("player games not found")      
         
-    offensive_scrape = player_career_O_stats.append(SP_tag, K_tag, KS_tag, E_tag, PCT_tag, A_tag, AS_tag, SA_tag, SAS_tag, SE_tag, PTS_tag)
-
-    for d in defensive:
-        SP_tag = d.select_one("text_center")
-        RE_tag = d.select_one("text_center")
-        Dig_tag = d.select_one("text_center")
-        Dig_s_tag = d.select_one("text_center")
-        TA_tag = d.select_one("text_center")
-        Rec_tag = d.select_one("text_center")
-        RE_s_tag = d.select_one("text_center")
-        BS_tag = d.select_one("text_center")
-        BA_tag = d.select_one("text_center")
-        BLK_tag = d.select_one("text_center")
-        BLK_S_tag = d.select_one("text_center")
-        BE_tag = d.select_one("text_center")
-        BHE_tag = d.select_one("text_center")
-
-        if first_name and last_name:
-            if first_name.lower() == first and last_name.lower() == last:
-                return {
-                    "sets_played_defense" : SP_tag.get_text(strip=True) if SP_tag else "N/A",
-                    "reception_errors" : RE_tag.get_text(strip=True) if RE_tag else "N/A",
-                    "digs" : Dig_tag.get_text(strip=True) if Dig_tag else "N/A",
-                    "digs_per_set" : Dig_s_tag.get_text(strip=True) if Dig_s_tag else "N/A",
-                    "blocks_solos" : BS_tag.get_text(strip=True) if BS_tag else "N/A",
-                    "block_assists" : BA_tag.get_text(strip=True) if BA_tag else "N/A",
-                    "blk" :BLK_tag.get_text(strip=True) if BLK_tag else "N/A",
-                    "blk_per_s" : BLK_S_tag.get_text(strip=True) if BLK_S_tag else "N/A",
-                    "block_errors" : BE_tag.get_text(strip=True) if BE_tag else "N/A",
-                    "ball_handling_errors" : BHE_tag.get_text(strip=True) if BHE_tag else "N/A",
-                }
-            else:
-                return("error with players defensive stats")
-        else:
-            return ("defensive stats not found")
+        games_played_stats = player_games_played.append(date_tag, opponet_tag, SP_tag, K_tag,E_tag, TA_tag, PCT_tag, AST_tag, SA_tag, SE_tag, RE_tag, DIG_tag, BS_tag, BA_tag, BE_tag, TB_tag, BHE_tag)
         
-    defensive_scrape = player_career_D_stats.append(SP_tag, Dig_tag,Dig_s_tag,RE_tag, TA_tag, Rec_tag, RE_s_tag, BS_tag,BA_tag,BLK_tag,BLK_S_tag,BE_tag,BHE_tag)
-
-
-    return defensive_scrape , offensive_scrape
-
-def scrape_player_match_played(first_name, last_name, school):
-     #need to add the scrape that pull from nested nested table that is name specific 
-     #will need to add a for lopp to pull all the data that is stored 
-    player_games_played = []
-
-    first = first.strip().lower()
-    last = last.strip().lower()
-    school = school_grab()
-
-    url = get_working_carrer_stats_url(school)
-
-    response = requests.get(url)
-    soup = BeautifulSoup(response.content, "html.parser")
-
-    stats = soup.find_all('sorting')
-
-    for s in stats: 
-        #it will return multiple result for a specific tag 
-        date_tag = s.select_all("text-center")
-        opponet_tag = s.select_all("text-center")
-        SP_tag = s.select_all("text-center")
-        K_tag = s.select_all("text-center")
-        E_tag = s.select_all("text-center")
-        TA_tag = s.select_all("text-center")
-        PCT_tag = s.select_all("text-center")
-        AST_tag = s.select_all("text-center")
-        SA_tag = s.select_all("text-center")
-        SE_tag = s.select_all("text-center")
-        RE_tag = s.select_all("text-center")
-        DIG_tag = s.select_all("text-center")
-        BS_tag = s.select_all("text-center")
-        BA_tag = s.select_all("text-center")
-        BE_tag = s.select_all("text-center")
-        TB_tag = s.select_all("text-center")
-        BHE_tag = s.select_all("text-center")
-
-        if first_name and last_name:
-            if first_name.lower() == first and last_name.lower() == last:
-                return {
-                    "game_date": date_tag.get_text(strip=True) if date_tag else "N/A",
-                    "opponet": opponet_tag.get_text(strip=True) if opponet_tag else "N/A",
-                    "sets_played" : SP_tag.get_text(strip=True) if SP_tag else "N/A",
-                    "kills" : K_tag.get_text(strip=True) if K_tag else "N/A",
-                    "errs" : E_tag.get_text(strip=True) if E_tag else "N/A",
-                    "total_attempts" : TA_tag.get_text(strip=True) if TA_tag else "N/A",
-                    "attack_percentage" : PCT_tag.get_text(strip=True) if PCT_tag else "N/A",
-                    "assists" : AST_tag.get_text(strip=True) if AST_tag else "N/A",
-                    "service_aces" : SA_tag.get_text(strip=True) if SA_tag else "N/A",
-                    "service_errors" : SE_tag.get_text(strip=True) if SE_tag else "N/A",
-                    "reception_errors" : RE_tag.get_text(strip=True) if RE_tag else "N/A",
-                    "dings" : DIG_tag.get_text(strip=True) if DIG_tag else "N/A",
-                    "block_solos" : BS_tag.get_text(strip=True) if BS_tag else "N/A",
-                    "block_assists" : BA_tag.get_text(strip=True) if BA_tag else "N/A",
-                    "block_errors" : BE_tag.get_text(strip=True) if BE_tag else "N/A",
-                    "total_blocks" : TB_tag.get_text(strip=True) if TB_tag else "N/A",
-                    "ball_handling_errors" : BHE_tag.get_text(strip=True) if BHE_tag else "N/A",
-                }
-            else:
-                return("error with getting the games player participated in")
-        else:
-            return("player games not found")      
-    
-    games_played_stats = player_games_played.append(date_tag, opponet_tag, SP_tag, K_tag,E_tag, TA_tag, PCT_tag, AST_tag, SA_tag, SE_tag, RE_tag, DIG_tag, BS_tag, BA_tag, BE_tag, TB_tag, BHE_tag)
-    
-    return games_played_stats
+        return games_played_stats
