@@ -8,6 +8,12 @@ class PlayerIdentifyingInformation:
     first_name: str
     last_name: str
     school: str
+    hometown: str
+    eligibility: str
+    position: str
+    height: str
+    isFavorite: bool
+    contact_status: int
 
 @dataclass
 class CareerStatistics:
@@ -55,7 +61,8 @@ class GameStatistics:
     ball_handling_errors: int
     total_blocks: int
     pii_id: int
-
+    
+###MYSQL ARTIFACT###
 # def get_db_connection():
 #     try:
 #         connection = mysql.connector.connect(
@@ -74,12 +81,19 @@ def create_table_if_not_exists_player_identifying_information(connection):
     if connection is not None:
         try:
             cursor = connection.cursor()
+            #Contact Status: 0 = Not Contacted, 1 = In communication, 2 = Committed
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS player_identifying_information (
                     pii_id INTEGER PRIMARY KEY AUTOINCREMENT,
                     first_name TEXT NOT NULL,
                     last_name TEXT NOT NULL,
-                    school TEXT NOT NULL
+                    school TEXT NOT NULL,
+                    hometown TEXT,
+                    eligibility TEXT,
+                    position TEXT,
+                    height TEXT,
+                    isFavorite BOOLEAN DEFAULT 0,
+                    contact_status INTEGER DEFAULT 0 
                 )
             """)
             connection.commit()
@@ -158,7 +172,7 @@ def get_db_connection():
     db_filepath = "transferPortalAssistant.db"
     try:
         connection = sqlite3.connect(db_filepath)
-        connection.row_factory = sqlite3.Row
+        #connection.row_factory = sqlite3.Row
         create_table_if_not_exists_player_identifying_information(connection)
         create_table_if_not_exists_career_statistics(connection)
         create_table_if_not_exists_game_statistics(connection)
@@ -186,13 +200,17 @@ def execute_insert(query, params):
     
 def insert_into_player_identifying_information(pii):
     query = """
-    INSERT INTO player_identifying_information (first_name, last_name, school)
-    VALUES (?, ?, ?)
+    INSERT INTO player_identifying_information (first_name, last_name, school, hometown, eligibility, position, height)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
     """
     params = (
         pii.first_name, 
         pii.last_name, 
-        pii.school
+        pii.school, 
+        pii.hometown, 
+        pii.eligibility, 
+        pii.position, 
+        pii.height
         )
     execute_insert(query, params)
     return print("Player identifying information inserted successfully")
@@ -486,7 +504,7 @@ if conn is not None:
 # insert_game_statistics(game_stats)
 
 
-# print(get_all_player_data())
+print(get_all_player_data())
 
 
 
