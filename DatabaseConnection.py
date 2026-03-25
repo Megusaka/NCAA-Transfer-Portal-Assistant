@@ -335,6 +335,17 @@ def get_career_statistics_by_player_id(player_id):
 def get_game_statistics_by_player_id(player_id):
     query = "SELECT * FROM game_statistics WHERE player_id = ?"
     return execute_read(query, (player_id,))
+##logan's gets
+def get_all_player_data():
+    query = "SELECT * FROM player_identifying_information"
+    return execute_read(query, ())
+
+def get_career_statistics_by_pii_id(pii_id):
+    query = "SELECT * FROM career_statistics WHERE pii_id = ?"
+    return execute_read(query, (pii_id,))
+
+def get_player_by_favorite():
+    query = "SELECT * FROM player_identifying_information WHERE is_favorite = TRUE"
 
 def execute_update(query, params):
     connection = get_db_connection()
@@ -483,13 +494,7 @@ def delete_game_statistics_by_player_id_and_game_date(pii_id, game_date):
     execute_delete(query, params)
 
 
-def get_all_player_data():
-    query = "SELECT * FROM player_identifying_information"
-    return execute_read(query, ())
 
-def get_career_statistics_by_pii_id(pii_id):
-    query = "SELECT * FROM career_statistics WHERE pii_id = ?"
-    return execute_read(query, (pii_id,))
 
 
 

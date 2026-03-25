@@ -76,6 +76,5 @@ def player_detail(pii_id):
          return redirect(url_for("index"))
     return render_template("player_detail.html", career = career_stats)
 
-
 if __name__ == "__main__":
     app.run(debug=True)
