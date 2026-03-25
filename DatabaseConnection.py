@@ -16,7 +16,7 @@ class PlayerIdentifyingInformation:
 @dataclass
 class CareerStatistics:
     player_id: int
-    sets_played: int
+    sets_played_offense: int
     kills: int
     kills_per_set: float
     errs: int
@@ -27,6 +27,7 @@ class CareerStatistics:
     serve_aces: int
     serve_errors: int
     serve_aces_per_set: float
+    sets_played_defense: int
     reception_errors: int
     digs: int
     digs_per_set: float
@@ -210,10 +211,10 @@ def insert_into_career_statistics(career_stats):
     reception_errors, digs, digs_per_set, block_solos, block_assists, 
     blk, blk_per_s, block_errors, ball_handling_errors, points, pii_id)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 
-    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """
     params = (
-        career_stats.sets_played,
+        career_stats.sets_played_offensive,
         career_stats.kills,
         career_stats.kills_per_set,
         career_stats.errs,
@@ -224,6 +225,7 @@ def insert_into_career_statistics(career_stats):
         career_stats.serve_aces,
         career_stats.serve_errors,
         career_stats.serve_aces_per_set,
+        career_stats.sets_played_defensive,
         career_stats.reception_errors,
         career_stats.digs,
         career_stats.digs_per_set,

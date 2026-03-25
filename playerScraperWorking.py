@@ -232,10 +232,6 @@ def scrape_player_career_stats(first_name, last_name, school):
     for o in offensive: 
         #there is only one result that needs to be returned 
         SP_tag =o.select_one("text-center")
-        MP_tag = o.select_one("text-center")
-        MS_tag = o.select_one("text-center")
-        pts_tag = o.select_one("text-center")
-        pts_s_tag = o.select_one("text-center")
         K_tag = o.select_one("text-center")
         KS_tag = o.select_one("text-center")
         E_tag = o.select_one("text-center")
@@ -246,37 +242,36 @@ def scrape_player_career_stats(first_name, last_name, school):
         SA_tag = o.select_one("text-center")
         SAS_tag = o.select_one("text-center")
         SE_tag = o.select_one("text-center")
+        PTS_tag = o.select_one("text-center")
 
         if first_name and last_name:
             if first_name.lower() == first and last_name.lower() == last:
                 return {
-                    "SP" : SP_tag.get_text(strip=True) if SP_tag else "N/A",
-                    "MP" : MP_tag.get_text(strip=True) if MP_tag else "N/A",
-                    "MS" : MS_tag.get_text(strip=True) if MS_tag else "N/A",
-                    "PTS" : pts_tag.get_text(strip=True) if pts_tag else "N/A",
-                    "PTS/S" : pts_s_tag.get_text(strip=True) if pts_s_tag else "N/A",
-                    "K" : K_tag.get_text(strip=True) if K_tag else "N/A",
-                    "K/S" : KS_tag.get_text(strip=True) if KS_tag else "N/A",
-                    "E" : E_tag.get_text(strip=True) if E_tag else "N/A",
-                    "PCT" : PCT_tag.get_text(strip=True) if PCT_tag else "N/A",
-                    "A" : A_tag.get_text(strip=True) if A_tag else "N/A",
-                    "AS" : AS_tag.get_text(strip=True) if AS_tag else "N/A",
-                    "SA" : SA_tag.get_text(strip=True) if SA_tag else "N/A",
-                    "SAS" : SAS_tag.get_text(strip=True) if SAS_tag else "N/A",
-                    "SE" : SE_tag.get_text(strip=True) if SE_tag else "N/A",
+                    "sets_played" : SP_tag.get_text(strip=True) if SP_tag else "N/A",
+                    "kills" : K_tag.get_text(strip=True) if K_tag else "N/A",
+                    "kills_per_set" : KS_tag.get_text(strip=True) if KS_tag else "N/A",
+                    "errs" : E_tag.get_text(strip=True) if E_tag else "N/A",
+                    "total_attempts" : TA_tag.get_text(strip=True) if TA_tag else "N/A",
+                    "attack_percentage" : PCT_tag.get_text(strip=True) if PCT_tag else "N/A",
+                    "assists" : A_tag.get_text(strip=True) if A_tag else "N/A",
+                    "assists_per_set" : AS_tag.get_text(strip=True) if AS_tag else "N/A",
+                    "service_aces" : SA_tag.get_text(strip=True) if SA_tag else "N/A",
+                    "service_aces_per_set" : SAS_tag.get_text(strip=True) if SAS_tag else "N/A",
+                    "serve_errors" : SE_tag.get_text(strip=True) if SE_tag else "N/A",
+                    "points" : PTS_tag.get_text(string=True) if PTS_tag else "N/A",
                 }
             else:
                 return("error with player's offensive stats")
         else: 
             return("offensive stats not found")
         
-    offensive_scrape = player_career_O_stats.append(SP_tag, MP_tag, MS_tag, pts_tag, pts_s_tag, K_tag, KS_tag, E_tag, PCT_tag, A_tag, AS_tag, SA_tag, SAS_tag, SE_tag)
+    offensive_scrape = player_career_O_stats.append(SP_tag, K_tag, KS_tag, E_tag, PCT_tag, A_tag, AS_tag, SA_tag, SAS_tag, SE_tag, PTS_tag)
 
     for d in defensive:
         SP_tag = d.select_one("text_center")
+        RE_tag = d.select_one("text_center")
         Dig_tag = d.select_one("text_center")
         Dig_s_tag = d.select_one("text_center")
-        RE_tag = d.select_one("text_center")
         TA_tag = d.select_one("text_center")
         Rec_tag = d.select_one("text_center")
         RE_s_tag = d.select_one("text_center")
@@ -290,19 +285,16 @@ def scrape_player_career_stats(first_name, last_name, school):
         if first_name and last_name:
             if first_name.lower() == first and last_name.lower() == last:
                 return {
-                    "SP" : SP_tag.get_text(strip=True) if SP_tag else "N/A",
-                    "DIG" : Dig_tag.get_text(strip=True) if Dig_tag else "N/A",
-                    "Dig/S" : Dig_s_tag.get_text(strip=True) if Dig_s_tag else "N/A",
-                    "RE" : RE_tag.get_text(strip=True) if RE_tag else "N/A",
-                    "TA" : TA_tag.get_text(strip=True) if TA_tag else "N/A",
-                    "REC" : Rec_tag.get_text(strip=True) if Rec_tag else "N/A",
-                    "RE/S" : RE_s_tag.get_text(strip=True) if RE_s_tag else "N/A",
-                    "BS" : BS_tag.get_text(strip=True) if BS_tag else "N/A",
-                    "BA" : BA_tag.get_text(strip=True) if BA_tag else "N/A",
-                    "BLK" :BLK_tag.get_text(strip=True) if BLK_tag else "N/A",
-                    "BLK/S" : BLK_S_tag.get_text(strip=True) if BLK_S_tag else "N/A",
-                    "BE" : BE_tag.get_text(strip=True) if BE_tag else "N/A",
-                    "BHE" : BHE_tag.get_text(strip=True) if BHE_tag else "N/A",
+                    "sets_played_defense" : SP_tag.get_text(strip=True) if SP_tag else "N/A",
+                    "reception_errors" : RE_tag.get_text(strip=True) if RE_tag else "N/A",
+                    "digs" : Dig_tag.get_text(strip=True) if Dig_tag else "N/A",
+                    "digs_per_set" : Dig_s_tag.get_text(strip=True) if Dig_s_tag else "N/A",
+                    "blocks_solos" : BS_tag.get_text(strip=True) if BS_tag else "N/A",
+                    "block_assists" : BA_tag.get_text(strip=True) if BA_tag else "N/A",
+                    "blk" :BLK_tag.get_text(strip=True) if BLK_tag else "N/A",
+                    "blk_per_s" : BLK_S_tag.get_text(strip=True) if BLK_S_tag else "N/A",
+                    "block_errors" : BE_tag.get_text(strip=True) if BE_tag else "N/A",
+                    "ball_handling_errors" : BHE_tag.get_text(strip=True) if BHE_tag else "N/A",
                 }
             else:
                 return("error with players defensive stats")
@@ -353,23 +345,23 @@ def scrape_player_match_played(first_name, last_name, school):
         if first_name and last_name:
             if first_name.lower() == first and last_name.lower() == last:
                 return {
-                    "date": date_tag.get_text(strip=True) if date_tag else "N/A",
+                    "game_date": date_tag.get_text(strip=True) if date_tag else "N/A",
                     "opponet": opponet_tag.get_text(strip=True) if opponet_tag else "N/A",
-                    "SP" : SP_tag.get_text(strip=True) if SP_tag else "N/A",
-                    "K" : K_tag.get_text(strip=True) if K_tag else "N/A",
-                    "E" : E_tag.get_text(strip=True) if E_tag else "N/A",
-                    "TA" : TA_tag.get_text(strip=True) if TA_tag else "N/A",
-                    "PCT" : PCT_tag.get_text(strip=True) if PCT_tag else "N/A",
-                    "AST" : AST_tag.get_text(strip=True) if AST_tag else "N/A",
-                    "SA" : SA_tag.get_text(strip=True) if SA_tag else "N/A",
-                    "SE" : SE_tag.get_text(strip=True) if SE_tag else "N/A",
-                    "RE" : RE_tag.get_text(strip=True) if RE_tag else "N/A",
-                    "DIG" : DIG_tag.get_text(strip=True) if DIG_tag else "N/A",
-                    "BS" : BS_tag.get_text(strip=True) if BS_tag else "N/A",
-                    "BA" : BA_tag.get_text(strip=True) if BA_tag else "N/A",
-                    "BE" : BE_tag.get_text(strip=True) if BE_tag else "N/A",
-                    "TB" : TB_tag.get_text(strip=True) if TB_tag else "N/A",
-                    "BHE" : BHE_tag.get_text(strip=True) if BHE_tag else "N/A",
+                    "sets_played" : SP_tag.get_text(strip=True) if SP_tag else "N/A",
+                    "kills" : K_tag.get_text(strip=True) if K_tag else "N/A",
+                    "errs" : E_tag.get_text(strip=True) if E_tag else "N/A",
+                    "total_attempts" : TA_tag.get_text(strip=True) if TA_tag else "N/A",
+                    "attack_percentage" : PCT_tag.get_text(strip=True) if PCT_tag else "N/A",
+                    "assists" : AST_tag.get_text(strip=True) if AST_tag else "N/A",
+                    "service_aces" : SA_tag.get_text(strip=True) if SA_tag else "N/A",
+                    "service_errors" : SE_tag.get_text(strip=True) if SE_tag else "N/A",
+                    "reception_errors" : RE_tag.get_text(strip=True) if RE_tag else "N/A",
+                    "dings" : DIG_tag.get_text(strip=True) if DIG_tag else "N/A",
+                    "block_solos" : BS_tag.get_text(strip=True) if BS_tag else "N/A",
+                    "block_assists" : BA_tag.get_text(strip=True) if BA_tag else "N/A",
+                    "block_errors" : BE_tag.get_text(strip=True) if BE_tag else "N/A",
+                    "total_blocks" : TB_tag.get_text(strip=True) if TB_tag else "N/A",
+                    "ball_handling_errors" : BHE_tag.get_text(strip=True) if BHE_tag else "N/A",
                 }
             else:
                 return("error with getting the games player participated in")
