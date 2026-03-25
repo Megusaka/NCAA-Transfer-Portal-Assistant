@@ -443,6 +443,16 @@ def update_game_statistics(game_stats):
     )
     execute_update(query, params)
 
+def update_player_favorite_status(pii_id, is_favorite):
+    query = "UPDATE player_identifying_information SET isFavorite = ? WHERE pii_id = ?"
+    params = (is_favorite, pii_id)
+    execute_update(query, params)
+
+def update_player_contact_status(pii_id, contact_status):
+    query = "UPDATE player_identifying_information SET contact_status = ? WHERE pii_id = ?"
+    params = (contact_status, pii_id)
+    execute_update(query, params)
+
 def execute_delete(query, params):
     connection = get_db_connection()
     if connection is not None:
