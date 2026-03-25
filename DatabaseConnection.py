@@ -12,7 +12,7 @@ class PlayerIdentifyingInformation:
     eligibility: str
     position: str
     height: str
-    isFavorite: bool
+    is_favorite: bool
     contact_status: int
 
 @dataclass
@@ -92,7 +92,7 @@ def create_table_if_not_exists_player_identifying_information(connection):
                     eligibility TEXT,
                     position TEXT,
                     height TEXT,
-                    isFavorite BOOLEAN DEFAULT 0,
+                    is_favorite BOOLEAN DEFAULT 0,
                     contact_status INTEGER DEFAULT 0 
                 )
             """)
@@ -455,7 +455,7 @@ def update_game_statistics(game_stats):
     execute_update(query, params)
 
 def update_player_favorite_status(pii_id, is_favorite):
-    query = "UPDATE player_identifying_information SET isFavorite = ? WHERE pii_id = ?"
+    query = "UPDATE player_identifying_information SET is_favorite = ? WHERE pii_id = ?"
     params = (is_favorite, pii_id)
     execute_update(query, params)
 
