@@ -463,6 +463,38 @@ def get_career_statistics_by_pii_id(pii_id):
     query = "SELECT * FROM career_statistics WHERE pii_id = ?"
     return execute_read(query, (pii_id,))
 
+def get_career_statistics_by_pii_id_as_class(pii_id) -> CareerStatistics | None:
+    query = "SELECT * FROM career_statistics WHERE pii_id = ?"
+    results = execute_read(query, (pii_id,))
+    if results and len(results) > 0:
+        row = results[0]
+        return CareerStatistics(
+            player_id=row["player_id"],
+            sets_played=row["sets_played"],
+            kills=row["kills"],
+            kills_per_set=row["kills_per_set"],
+            errs=row["errs"],
+            total_attempts=row["total_attempts"],
+            attack_percentage=row["attack_percentage"],
+            assists=row["assists"],
+            assists_per_set=row["assists_per_set"],
+            serve_aces=row["serve_aces"],
+            serve_errors=row["serve_errors"],
+            serve_aces_per_set=row["serve_aces_per_set"],
+            reception_errors=row["reception_errors"],
+            digs=row["digs"],
+            digs_per_set=row["digs_per_set"],
+            block_solos=row["block_solos"],
+            block_assists=row["block_assists"],
+            blk=row["blk"],
+            blk_per_s=row["blk_per_s"],
+            block_errors=row["block_errors"],
+            ball_handling_errors=row["ball_handling_errors"],
+            points=row["points"],
+            pii_id=row["pii_id"]
+        )
+    return None
+
 
 
     
@@ -486,7 +518,7 @@ if conn is not None:
 # insert_game_statistics(game_stats)
 
 
-# print(get_all_player_data())
+# print(get_career_statistics_by_pii_id(1))
 
 
 
