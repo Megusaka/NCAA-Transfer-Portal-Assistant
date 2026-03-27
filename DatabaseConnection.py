@@ -476,7 +476,7 @@ if conn is not None:
 # PlayerIdentifyingInformation1 = PlayerIdentifyingInformation(pii_id=None, first_name="Jane", last_name="Doe", school="University B")
 # insert_into_player_identifying_information(PlayerIdentifyingInformation1)
 
-# career_stats = CareerStatistics(player_id=1, sets_played=100, kills=500, kills_per_set=5.0, errs=50, total_attempts=1000, attack_percentage=0.45, assists=200,
+# career_stats = CareerStatistics(player_id=3, sets_played=100, kills=500, kills_per_set=5.0, errs=50, total_attempts=1000, attack_percentage=0.45, assists=200,
 #               assists_per_set=2.0, serve_aces=30, serve_errors=10, serve_aces_per_set=0.3, reception_errors=20, digs=150,
 #               digs_per_set=1.5, block_solos=10, block_assists=40, blk=50, blk_per_s=0.5, block_errors=5, ball_handling_errors=15, points=600, pii_id=1)
 # insert_into_career_statistics(career_stats)
@@ -486,7 +486,7 @@ if conn is not None:
 # insert_game_statistics(game_stats)
 
 
-# print(get_all_player_data())
+print(get_all_player_data())
 
 
 

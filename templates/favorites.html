@@ -18,7 +18,7 @@
     <tbody>
         {% for row in all_data %}
         <tr>
-            <td>{{ row.identifying.first_name }}</td>
+            <td><a href="{{ url_for('player_detail', pii_id=row.identifying.pii_id) }}">{{ row.identifying.first_name }}</a></td>
             <td>{{ row.identifying.last_name }}</td>
             <td>{{ row.identifying.school }}</td>
             <td>{{ row.career.sets_played or 'N/A' }}</td>

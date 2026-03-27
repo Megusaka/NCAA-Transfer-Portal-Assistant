@@ -1,21 +1,104 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Player Details</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-<h1>Player Details</h1>
+{% block content %}
+<h2>Player Statistics</h2>
 
-{% if player %}
-    <p>Name: {{ player[0][0] }} {{ player[0][1] }}</p>
-    <p>School: {{ player[0][2] }}</p>
-{% else %}
-    <p>Player not found.</p>
-{% endif %}
+{% for s in career_stats %}
+<table>
+    <tr>
+        <th>Player ID</th>
+        <td>{{ s.player_id }}</td>
+    </tr>
+    <tr>
+        <th>Sets Played</th>
+        <td>{{ s.sets_played }}</td>
+    </tr>
+    <tr>
+        <th>Kills</th>
+        <td>{{ s.kills }}</td>
+    </tr>
+    <tr>
+        <th>Kills/Set</th>
+        <td>{{ s.kills_per_set }}</td>
+    </tr>
+    <tr>
+        <th>Errors</th>
+        <td>{{ s.errs }}</td>
+    </tr>
+    <tr>
+        <th>Total Attempts</th>
+        <td>{{ s.total_attempts }}</td>
+    </tr>
+    <tr>
+        <th>Attack %</th>
+        <td>{{ s.attack_percentage }}</td>
+    </tr>
+    <tr>
+        <th>Assists</th>
+        <td>{{ s.assists }}</td>
+    </tr>
+    <tr>
+        <th>Assists/Set</th>
+        <td>{{ s.assists_per_set }}</td>
+    </tr>
+    <tr>
+        <th>Serve Aces</th>
+        <td>{{ s.serve_aces }}</td>
+    </tr>
+    <tr>
+        <th>Serve Errors</th>
+        <td>{{ s.serve_errors }}</td>
+    </tr>
+    <tr>
+        <th>Aces/Set</th>
+        <td>{{ s.serve_aces_per_set }}</td>
+    </tr>
+    <tr>
+        <th>Reception Errors</th>
+        <td>{{ s.reception_errors }}</td>
+    </tr>
+    <tr>
+        <th>Digs</th>
+        <td>{{ s.digs }}</td>
+    </tr>
+    <tr>
+        <th>Digs/Set</th>
+        <td>{{ s.digs_per_set }}</td>
+    </tr>
+    <tr>
+        <th>Block Solos</th>
+        <td>{{ s.block_solos }}</td>
+    </tr>
+    <tr>
+        <th>Block Assists</th>
+        <td>{{ s.block_assists }}</td>
+    </tr>
+    <tr>
+        <th>BLK</th>
+        <td>{{ s.blk }}</td>
+    </tr>
+    <tr>
+        <th>BLK/Set</th>
+        <td>{{ s.blk_per_s }}</td>
+    </tr>
+    <tr>
+        <th>Block Errors</th>
+        <td>{{ s.block_errors }}</td>
+    </tr>
+    <tr>
+        <th>Ball Handling Errors</th>
+        <td>{{ s.ball_handling_errors }}</td>
+    </tr>
+    <tr>
+        <th>Points</th>
+        <td>{{ s.points }}</td>
+    </tr>
+    <tr>
+        <th>PII ID</th>
+        <td>{{ s.pii_id }}</td>
+    </tr>
+</table>
+<hr>
+{% endfor %}
 
-<br>
-<a href="{{ url_for('index') }}">Back to Home</a>
-
-</body>
-</html>
+{% endblock %}
