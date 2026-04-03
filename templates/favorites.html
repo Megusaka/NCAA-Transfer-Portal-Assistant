@@ -2,32 +2,51 @@
 
 {% block content %}
 <h2>Favorite Players</h2>
-<table>
-    <thead>
-        <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>School</th>
-            <th>Sets Played</th>
-            <th>Kills</th>
-            <th>Kills/Set</th>
-            <th>Assists/Set</th>
-            <th>Points</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for row in all_data %}
-        <tr>
-            <td>{{ row.identifying.first_name }}</td>
-            <td>{{ row.identifying.last_name }}</td>
-            <td>{{ row.identifying.school }}</td>
-            <td>{{ row.career.sets_played or 'N/A' }}</td>
-            <td>{{ row.career.kills or 'N/A' }}</td>
-            <td>{{ row.career.kills_per_set or 'N/A' }}</td>
-            <td>{{ row.career.assists_per_set or 'N/A' }}</td>
-            <td>{{ row.career.points or 'N/A' }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+
+<div class="tab-container">
+    <a class="tab-btn" href="#tab-all">All</a>
+    <a class="tab-btn" href="#tab-libero">Libero</a>
+    <a class="tab-btn" href="#tab-setter">Setter</a>
+    <a class="tab-btn" href="#tab-outside-hitter">Outside Hitter</a>
+    <a class="tab-btn" href="#tab-middle-blocker">Middle Blocker</a>
+</div>
+
+{% for position in ['all', 'libero', 'setter', 'outside-hitter', 'middle-blocker'] %}
+<div id="tab-{{ position }}" class="tab-content">
+    <table>
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>School</th>
+                <th>Sets Played</th>
+                <th>Kills</th>
+                <th>Kills/Set</th>
+                <th>Assists/Set</th>
+                <th>Digs/Set</th>
+                <th>Blocks/Set</th>
+                <th>Points</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in all_data %}
+<!-- switch by position when added -->
+            <tr>
+                <td>{{ row.identifying.first_name }}</td>
+                <td>{{ row.identifying.last_name }}</td>
+                <td>{{ row.identifying.school }}</td>
+                <td>{{ row.career.sets_played or 'N/A' }}</td>
+                <td>{{ row.career.kills or 'N/A' }}</td>
+                <td>{{ row.career.kills_per_set or 'N/A' }}</td>
+                <td>{{ row.career.assists_per_set or 'N/A' }}</td>
+                <td>{{ row.career.digs_per_set or 'N/A' }}</td>
+                <td>{{ row.career.blk_per_s or 'N/A' }}</td>
+                <td>{{ row.career.points or 'N/A' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endfor %}
+
 {% endblock %}

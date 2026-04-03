@@ -129,3 +129,46 @@ tr:nth-child(even){
 tr:hover{
     background-color: #e8f0ff;
 }
+
+.tab-container {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 0;
+    margin-top: 20px;
+}
+
+.tab-btn {
+    padding: 8px 16px;
+    border: 1px solid #ccc;
+    background-color: #e0e0e0;
+    color: #333;
+    border-radius: 4px 4px 0 0;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.tab-btn.active {
+    background-color: #2f80ed;
+    color: white;
+    border-color: #2f80ed;
+}
+
+.tab-btn:hover:not(.active) {
+    background-color: #c8c8c8;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content:target {
+    display: block;
+}
+
+#tab-all:not(:target) {
+    display: block;
+}
+
+.tab-content:target ~ #tab-all {
+    display: none;
+}
