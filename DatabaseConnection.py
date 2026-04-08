@@ -322,6 +322,19 @@ def get_player_id_by_information(pii):
     else:
         print("No player found with the given information.")
         return None
+    
+def get_pii_id_by_name_and_school(first_name, last_name, school):
+    query = """
+    SELECT pii_id FROM player_identifying_information
+    WHERE first_name = ? AND last_name = ? AND school = ?
+    """
+    params = (first_name, last_name, school)
+    results = execute_read(query, params)
+    if results:
+        return results[0][0]
+    else:
+        print("No player found with the given name and school.")
+        return None
 
 def get_career_statistics_by_player_id(player_id):
     query = "SELECT * FROM career_statistics WHERE player_id = ?"
@@ -335,6 +348,20 @@ def get_career_statistics_by_player_id(player_id):
 def get_game_statistics_by_player_id(player_id):
     query = "SELECT * FROM game_statistics WHERE player_id = ?"
     return execute_read(query, (player_id,))
+
+def get_career_statistics_by_pii_id(pii_id):
+    query = "SELECT * FROM career_statistics WHERE pii_id = ?"
+    results = execute_read(query, (pii_id,))
+    if results:
+        return results[0]
+    else:
+        print("No career statistics found for the given PII ID.")
+        return None
+    
+def get_all_career_statistics():
+    query = "SELECT * FROM career_statistics"
+    return execute_read(query, ())
+
 ##logan's gets
 def get_all_player_data():
     query = "SELECT * FROM player_identifying_information"
@@ -493,6 +520,18 @@ def delete_game_statistics_by_player_id_and_game_date(pii_id, game_date):
     params = (pii_id, game_date)
     execute_delete(query, params)
 
+def drop_player_identifying_information_table():
+    query = "DROP TABLE IF EXISTS player_identifying_information"
+    execute_delete(query, ())
+
+def drop_career_statistics_table():
+    query = "DROP TABLE IF EXISTS career_statistics"
+    execute_delete(query, ())
+
+def drop_game_statistics_table():
+    query = "DROP TABLE IF EXISTS game_statistics"
+    execute_delete(query, ())
+
 
 
 
@@ -519,7 +558,18 @@ if conn is not None:
 # insert_game_statistics(game_stats)
 
 
-print(get_all_player_data())
+
+# olive_pii = PlayerIdentifyingInformation(pii_id=None, first_name="Olive", last_name="Rolseth", school="Western Colorado University", hometown="Grand Junction, CO", eligibility="Senior", position="Outside Hitter", height="6'0\"", is_favorite=False, contact_status=0)
+# insert_into_player_identifying_information(olive_pii)
+
+drop_player_identifying_information_table()
+drop_career_statistics_table()
+drop_game_statistics_table()
+
+#print(get_all_player_data())
+
+print(get_all_career_statistics())
+#print(get_career_statistics_by_pii_id(1))
 
 
 
