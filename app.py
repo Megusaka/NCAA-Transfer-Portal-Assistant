@@ -77,5 +77,14 @@ def player_detail(pii_id):
          return redirect(url_for("index"))
     return render_template("player_detail.html", career = career_stats)
 
+@app.route("/favorite/<int:pii_id>", methods=["POST"])
+def toggle_favorite(pii_id):
+    players = db.get_all_player_data()
+    player = next((p for p in players if p["pii_id"] == pii_id), None)
+    if player:
+        new_status = 0 if player["is_favorite"] else 1
+        db.update_player_favorite_status(pii_id, new_status)
+    return redirect(request.referrer)   #return to same page
+
 if __name__ == "__main__":
     app.run(debug=True)

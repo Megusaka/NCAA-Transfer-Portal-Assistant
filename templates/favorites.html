@@ -26,7 +26,7 @@
                 <th>Digs/Set</th>
                 <th>Blocks/Set</th>
                 <th>Points</th>
-                <th>Favorites</th>
+                <th>Favorite</th>
             </tr>
         </thead>
         <tbody>
@@ -43,10 +43,11 @@
                 <td>{{ row.career.digs_per_set or 'N/A' }}</td>
                 <td>{{ row.career.blk_per_s or 'N/A' }}</td>
                 <td>{{ row.career.points or 'N/A' }}</td>
-                <td> <form action="/index" method="post">
-                    <input type="checkbox" name="is_favorite" value="TRUE"></form></td>
-                    
-
+                <td>
+                    <form method="POST" action="{{ url_for('toggle_favorite', pii_id=row.identifying.pii_id) }}">
+                        <button type="submit">{{ '★' if row.identifying.is_favorite else '☆' }}</button>
+                    </form>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
