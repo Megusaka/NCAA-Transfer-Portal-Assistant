@@ -242,7 +242,7 @@ def career_stats_helper(first_name: str, last_name: str, school: str) :
 
     db.insert_into_career_statistics(career_stats)
 
-# career_stats_helper("Olive", "Rolseth", "Western Colorado University")
+career_stats_helper("Nina", "Cowan", "Western Colorado University")
 
 # offensive = get_soup_object("https://gomountaineers.com/sports/womens-volleyball/stats/2025#individual-overall-offensive")
 # defensive = get_soup_object("https://gomountaineers.com/sports/womens-volleyball/stats/2025#individual-overall-defensive")

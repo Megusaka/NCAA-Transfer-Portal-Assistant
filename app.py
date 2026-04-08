@@ -13,16 +13,9 @@ def index():
 
         if not first_name or not last_name or not school:
                 return redirect(url_for("index"))
-#will add to zoe's write to database file if needed, here just for current access, needs check for redundant add with get_player_id_by_info
-        scraped_data = playerScrape.scrape_player(first_name, last_name, school)
-        first, last = scraped_data["name"].split(" ", 1)
-#separate function for inserts
-        if scraped_data:
-                db.insert_into_player_identifying_information(
-                    first, last,
-                    scraped_data["school"]
+        playerScrape.scrape_player(first_name, last_name, school)
+        
 
-                )
 
         return redirect(url_for("index")) #allows for url change
 
