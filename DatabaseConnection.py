@@ -533,11 +533,6 @@ def drop_game_statistics_table():
     execute_delete(query, ())
 
 
-
-
-
-
-    
 conn = get_db_connection()
 if conn is not None:
     print("Database connection successful.")
@@ -562,9 +557,9 @@ if conn is not None:
 # olive_pii = PlayerIdentifyingInformation(pii_id=None, first_name="Olive", last_name="Rolseth", school="Western Colorado University", hometown="Grand Junction, CO", eligibility="Senior", position="Outside Hitter", height="6'0\"", is_favorite=False, contact_status=0)
 # insert_into_player_identifying_information(olive_pii)
 
-drop_player_identifying_information_table()
-drop_career_statistics_table()
-drop_game_statistics_table()
+# drop_player_identifying_information_table()
+# drop_career_statistics_table()
+# drop_game_statistics_table()
 
 #print(get_all_player_data())
 
