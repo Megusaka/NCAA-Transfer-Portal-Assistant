@@ -520,6 +520,10 @@ if conn is not None:
 #     serve_aces=2, serve_errors=1, reception_errors=0, digs=10, block_solos=1, block_assists=2, block_errors=0, ball_handling_errors=1, total_blocks=3, pii_id=1)
 # insert_game_statistics(game_stats)
 
+olive_pii = PlayerIdentifyingInformation(pii_id=None, first_name="Olive", last_name="Rolseth", school="Western Colorado University", hometown="Grand Junction, CO", eligibility="Senior", position="Outside Hitter", height="6'0\"", is_favorite=False, contact_status=0)
+insert_into_player_identifying_information(olive_pii)
+
+
 
 print(get_all_player_data())
 
