@@ -346,6 +346,7 @@ def get_career_statistics_by_pii_id(pii_id):
 
 def get_player_by_favorite():
     query = "SELECT * FROM player_identifying_information WHERE is_favorite = TRUE"
+###
 
 def execute_update(query, params):
     connection = get_db_connection()

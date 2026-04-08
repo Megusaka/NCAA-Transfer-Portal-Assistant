@@ -51,8 +51,6 @@ def index():
 
 @app.route("/favorites")
 def favorites():
-    # currently all players until favorites implemented in db
-    # eventually filter WHERE favorite = TRUE
     all_data = []
     fav_players = db.get_player_by_favorite()
     for player in fav_players:
