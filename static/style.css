@@ -54,7 +54,7 @@ body{
     flex-direction: column;
 }
 
-input{
+input, select{
     padding: 6px;
     border-radius: 4px;
     border: 1px solid #ccc;
@@ -90,7 +90,7 @@ input{
     border: 1px solid #ccc;
 }
 
-button{
+button, .tab-btn {
     padding: 8px 16px;
     border: none;
     background-color: #2f80ed;
@@ -100,7 +100,7 @@ button{
     cursor: pointer;
 }
 
-button:hover{
+button:hover, .tab-btn:hover{
     background-color: #1c60b8;
 }
 
@@ -128,4 +128,24 @@ tr:nth-child(even){
 
 tr:hover{
     background-color: #e8f0ff;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content:target {
+    display: block;
+}
+
+#tab-All {
+    display: block;
+}
+
+#tab-All:target {
+    display: block;
+}
+
+.tab-content:target ~ #tab-All {
+    display: none;
 }
