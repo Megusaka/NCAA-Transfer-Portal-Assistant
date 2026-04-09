@@ -526,6 +526,7 @@ if conn is not None:
 
 
 print(get_all_player_data())
+get_career_statistics_by_pii_id(1)
 
 
 
