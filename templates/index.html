@@ -17,7 +17,26 @@
 
     <div class="form-group">
         <label>School</label>
-        <input type="text" name="school" required>
+        <select name="school" required>
+            <option disabled selected value></option>
+            <optgroup label="RMAC">
+                <option value="Adams State">Adams State</option>
+                <option value="Black Hills State">Black Hills State</option>
+                <option value="Chadron State">Chadron State</option>
+                <option value="Colorado Christian">Colorado Christian</option>
+                <option value="Colorado Mesa">Colorado Mesa</option>
+                <option value="Colorado School of Mines">Colorado School of Mines</option>
+                <option value="CSU Pueblo">CSU Pueblo</option>
+                <option value="Fort Lewis">Fort Lewis</option>
+                <option value="MSU Denver">MSU Denver</option>
+                <option value="New Mexico Highlands">New Mexico Highlands</option>
+                <option value="Regis">Regis</option>
+                <option value="South Dakota Mines">South Dakota Mines</option>
+                <option value="UCCS">UCCS</option>
+                <option value="Western Colorado University">Western Colorado University</option>
+                <option value="Westminster">Westminster</option>
+            <optgroup>
+        </select>
     </div>
     <button type="submit">Search</button>
 </form>
@@ -26,18 +45,42 @@
 <h2>Search History</h2>
 
 <table>
-<tr>
-    <th>Name</th><th>School</th><th>Sets Played</th><th>Kills</th><th>Assists Per Set</th>
-</tr>
-{% for player in all_data %}
-<tr>
-    <td>{{ player.identifying.first_name }} {{ player.identifying.last_name }}</td>
-    <td>{{ player.identifying.school }}</td>
-    <td>{{ player.career.sets_played or '' }}</td>
-    <td>{{ player.career.kills or '' }}</td>
-    <td>{{ player.career.assists_per_set or '' }}</td>
-    <td><input type = "checkbox" name = "Favorite" value = "row1"></td>
-</tr>
-{% endfor %}
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>School</th>
+                <th>Sets Played</th>
+                <th>Kills</th>
+                <th>Kills/Set</th>
+                <th>Assists/Set</th>
+                <th>Digs/Set</th>
+                <th>Blocks/Set</th>
+                <th>Points</th>
+                <th>Favorite</th>
+            </tr>
+        </thead>
+    <tbody>
+        {% for player in all_data %}
+        {% set detail_url = url_for('player_detail', pii_id=player.identifying.pii_id) %}
+        <tr style="cursor:pointer;" onclick="window.location='{{ detail_url }}'">
+            <td>{{ player.identifying.first_name }}</td>
+            <td>{{ player.identifying.last_name }}</td>
+            <td>{{ player.identifying.school }}</td>
+            <td>{{ player.career.sets_played or 'N/A' }}</td>
+            <td>{{ player.career.kills or 'N/A' }}</td>
+            <td>{{ player.career.kills_per_set or 'N/A' }}</td>
+            <td>{{ player.career.assists_per_set or 'N/A' }}</td>
+            <td>{{ player.career.digs_per_set or 'N/A' }}</td>
+            <td>{{ player.career.blk_per_s or 'N/A' }}</td>
+            <td>{{ player.career.points or 'N/A' }}</td>
+            <td>
+                <form method="POST" action="{{ url_for('toggle_favorite', pii_id=player.identifying.pii_id) }}">
+                    <button type="submit" onclick="event.stopPropagation()">{{ '★' if player.identifying.is_favorite else '☆' }}</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
 {% endblock %}
