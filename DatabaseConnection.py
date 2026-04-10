@@ -554,15 +554,15 @@ if conn is not None:
 
 
 
-# olive_pii = PlayerIdentifyingInformation(pii_id=None, first_name="Olive", last_name="Rolseth", school="Western Colorado University", hometown="Grand Junction, CO", eligibility="Senior", position="Outside Hitter", height="6'0\"", is_favorite=False, contact_status=0)
-# insert_into_player_identifying_information(olive_pii)
+olive_pii = PlayerIdentifyingInformation(pii_id=None, first_name="Olive", last_name="Rolseth", school="Western Colorado University", hometown="Grand Junction, CO", eligibility="Senior", position="Outside Hitter", height="6'0\"", is_favorite=False, contact_status=0)
+insert_into_player_identifying_information(olive_pii)
 
-# nina_pii = PlayerIdentifyingInformation(pii_id=None, first_name="Nina", last_name="Cowan", school="Western Colorado University", hometown="Pueblo, CO", eligibility="Freshman", position="Libero", height="5-2", is_favorite=False, contact_status=0)
-# insert_into_player_identifying_information(nina_pii)
+nina_pii = PlayerIdentifyingInformation(pii_id=None, first_name="Nina", last_name="Cowan", school="Western Colorado University", hometown="Pueblo, CO", eligibility="Freshman", position="Libero", height="5-2", is_favorite=False, contact_status=0)
+insert_into_player_identifying_information(nina_pii)
 
-# drop_player_identifying_information_table()
-# drop_career_statistics_table()
-# drop_game_statistics_table()
+#drop_player_identifying_information_table()
+#drop_career_statistics_table()
+#drop_game_statistics_table()
 
 # print(get_all_player_data())
 
