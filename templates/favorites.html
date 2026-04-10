@@ -32,7 +32,8 @@
         <tbody>
             {% for row in all_data %}
             {% if row.identifying.position == position %}
-            <tr>
+            {% set detail_url = url_for('player_detail', pii_id=row.identifying.pii_id) %}
+            <tr style="cursor:pointer;" onclick="window.location='{{ detail_url }}'">
                 <td>{{ row.identifying.first_name }}</td>
                 <td>{{ row.identifying.last_name }}</td>
                 <td>{{ row.identifying.school }}</td>
@@ -45,7 +46,7 @@
                 <td>{{ row.career.points or 'N/A' }}</td>
                 <td>
                     <form method="POST" action="{{ url_for('toggle_favorite', pii_id=row.identifying.pii_id) }}">
-                        <button type="submit">{{ '★' if row.identifying.is_favorite else '☆' }}</button>
+                        <button type="submit" onclick="event.stopPropagation()">{{ '★' if row.identifying.is_favorite else '☆' }}</button>
                     </form>
                 </td>
             </tr>
@@ -68,7 +69,8 @@
         </thead>
         <tbody>
             {% for row in all_data %}
-            <tr>
+            {% set detail_url = url_for('player_detail', pii_id=row.identifying.pii_id) %}
+            <tr style="cursor:pointer;" onclick="window.location='{{ detail_url }}'">
                 <td>{{ row.identifying.first_name }}</td>
                 <td>{{ row.identifying.last_name }}</td>
                 <td>{{ row.identifying.school }}</td>

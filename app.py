@@ -71,11 +71,14 @@ def favorites():
 @app.route("/player/<int:pii_id>")  #detail view page, show graphs and game stats in future
 def player_detail(pii_id):
 
+    players = db.get_all_player_data()
+    player = next((p for p in players if p["pii_id"] == pii_id), None)
     career_stats = db.get_career_statistics_by_pii_id(pii_id)
 
-    if not career_stats:
-         return redirect(url_for("index"))
-    return render_template("player_detail.html", career = career_stats)
+    if not player:
+        return redirect(url_for("index"))
+
+    return render_template("player_detail.html", player=player, career=career_stats)
 
 @app.route("/favorite/<int:pii_id>", methods=["POST"])
 def toggle_favorite(pii_id):
