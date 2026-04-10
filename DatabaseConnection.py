@@ -43,6 +43,7 @@ class CareerStatistics:
 
 @dataclass
 class GameStatistics:
+    game_id: int
     game_date: str
     opponent: str
     sets_played: int
