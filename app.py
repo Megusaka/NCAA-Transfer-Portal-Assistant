@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 import DatabaseConnection as db
-import Scraper as playerScrape
+import FullInformationScraperHandler as ScrapeHandler
 
 app = Flask(__name__)
 
@@ -13,8 +13,9 @@ def index():
 
         if not first_name or not last_name or not school:
                 return redirect(url_for("index"))
-        playerScrape.scrape_player(first_name, last_name, school)
-
+        
+        ScrapeHandler.full_player_scrape_handler(first_name, last_name, school)
+        
         return redirect(url_for("index")) #allows for url change
 
 
@@ -70,7 +71,6 @@ def player_detail(pii_id):
         return redirect(url_for("index"))
 
     return render_template("player_detail.html", player=player, career=career_stats)
-
 
 @app.route("/favorite/<int:pii_id>", methods=["POST"])
 def toggle_favorite(pii_id):

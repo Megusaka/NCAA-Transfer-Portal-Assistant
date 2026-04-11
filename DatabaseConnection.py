@@ -345,6 +345,15 @@ def get_career_statistics_by_player_id(player_id):
     else:
         print("No career statistics found for the given player ID.")
         return None
+    
+def get_player_identifying_information_by_pii_id(pii_id):
+    query = "SELECT * FROM player_identifying_information WHERE pii_id = ?"
+    results = execute_read(query, (pii_id,))
+    if results:
+        return results[0]
+    else:
+        print("No player found with the given PII ID.")
+        return None
 
 def get_game_statistics_by_pii_id(pii_id):
     query = "SELECT * FROM game_statistics WHERE pii_id = ?"
@@ -557,6 +566,10 @@ if conn is not None:
 # game_stats = GameStatistics(game_date="2024-01-01", opponent="Team A", sets_played=3, kills=15, errs=2, total_attempts=30, attack_percentage=0.43, assists=5,
 #     serve_aces=2, serve_errors=1, reception_errors=0, digs=10, block_solos=1, block_assists=2, block_errors=0, ball_handling_errors=1, total_blocks=3, pii_id=1)
 # insert_game_statistics(game_stats)
+
+#olive_pii = PlayerIdentifyingInformation(pii_id=None, first_name="Olive", last_name="Rolseth", school="Western Colorado University", hometown="Grand Junction, CO", eligibility="Senior", position="Outside Hitter", height="6'0\"", is_favorite=False, contact_status=0)
+#insert_into_player_identifying_information(olive_pii)
+
 
 
 

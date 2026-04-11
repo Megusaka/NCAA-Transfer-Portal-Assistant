@@ -35,12 +35,12 @@ def auto_cast(value: str):
             return value
         
 def get_soup_object(url: str, first_name: str, last_name: str) -> BeautifulSoup:
-    # chrome_options = Options()
-    # chrome_options.add_argument("--headless")
-    # chrome_options.add_argument("--window-size=1920,1080")
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--window-size=1920,1080")
 
-    # driver = webdriver.Chrome(options=chrome_options)
-    driver = webdriver.Chrome()
+    driver = webdriver.Chrome(options=chrome_options)
+    #driver = webdriver.Chrome()
     driver.get(url)
 
     WebDriverWait(driver, 10).until(
@@ -128,9 +128,9 @@ def pii_helper(first_name: str, last_name: str, school: str, url: str):
 
     db.insert_into_player_identifying_information(pii_object)
 
-pii_helper("Olive", "Rolseth", "Western Colorado University", "https://gomountaineers.com/sports/womens-volleyball/stats/2025#individual")
+#pii_helper("Olive", "Rolseth", "Western Colorado University", "https://gomountaineers.com/sports/womens-volleyball/stats/2025#individual")
     
-print(db.get_all_player_data())
+#print(db.get_all_player_data())
 # soup = get_soup_object("https://gomountaineers.com/sports/womens-volleyball/stats/2025#individual", "Nina", "Cowan")
 # details_string = get_details_string(soup)
 # print(player_identifying_info_string_to_dataclass(details_string, "Nina", "Cowan", "Western Colorado University"))
