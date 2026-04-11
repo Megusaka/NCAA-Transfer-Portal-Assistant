@@ -346,9 +346,9 @@ def get_career_statistics_by_player_id(player_id):
         print("No career statistics found for the given player ID.")
         return None
 
-def get_game_statistics_by_player_id(player_id):
-    query = "SELECT * FROM game_statistics WHERE player_id = ?"
-    return execute_read(query, (player_id,))
+def get_game_statistics_by_pii_id(pii_id):
+    query = "SELECT * FROM game_statistics WHERE pii_id = ?"
+    return execute_read(query, (pii_id,))
 
 def get_career_statistics_by_pii_id(pii_id):
     query = "SELECT * FROM career_statistics WHERE pii_id = ?"
@@ -363,6 +363,10 @@ def get_all_career_statistics():
     query = "SELECT * FROM career_statistics"
     return execute_read(query, ())
 
+def get_all_game_statistics():
+    query = "SELECT * FROM game_statistics"
+    return execute_read(query, ())
+
 ##logan's gets
 def get_all_player_data():
     query = "SELECT * FROM player_identifying_information"
@@ -374,6 +378,7 @@ def get_career_statistics_by_pii_id(pii_id):
 
 def get_player_by_favorite():
     query = "SELECT * FROM player_identifying_information WHERE is_favorite = TRUE"
+    return execute_read(query, ())
 
 def execute_update(query, params):
     connection = get_db_connection()
@@ -564,8 +569,9 @@ if conn is not None:
 
 #print(get_all_player_data())
 
-print(get_all_career_statistics())
+#print(get_all_career_statistics())
 #print(get_career_statistics_by_pii_id(1))
 
+#print(get_all_game_statistics())
 
 

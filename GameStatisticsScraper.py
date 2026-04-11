@@ -6,7 +6,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support import expected_conditions as ec
 import time
-#import DatabaseConnection as db
+import DatabaseConnection as db
 
 LABEL_MAP = {
     "Date": "game_date",
@@ -149,13 +149,64 @@ def get_game_table_as_string(soup: BeautifulSoup) -> str:
 
     return "\n".join(lines)
 
+def player_game_stats_string_to_dataclass_array(game_stats_string: str, pii_id: int) -> list[db.GameStatistics]:
+
+    games = []
+    current_game = {}
+
+    for line in game_stats_string.splitlines():
+        line = line.strip()
+
+        if line == "Next Game":
+            if current_game:
+                games.append(db.GameStatistics(**current_game))
+            current_game = {"pii_id": pii_id}
+            continue
+
+        if not line or ": " not in line:
+            continue
+
+        label, value = line.split(": ", 1)
+        label = label.strip()
+        value = value.strip()
+
+        if label in LABEL_MAP:
+            field_name = LABEL_MAP[label]
+            current_game[field_name] = auto_cast(value)
+        
+        current_game["game_id"] = None
+
+    if current_game:
+        games.append(db.GameStatistics(**current_game))
+
+    return games
+
+
+def game_stats_helper(first_name: str, last_name: str, school: str, url: str):
+    soup = get_soup_object(url, first_name, last_name)
+    game_table_string = get_game_table_as_string(soup)
+    pii_id = db.get_pii_id_by_name_and_school(first_name, last_name, school)
+    game_stats_array = player_game_stats_string_to_dataclass_array(game_table_string, pii_id)
+
+    for game_stat in game_stats_array:
+        db.insert_game_statistics(game_stat)
+
 # def get_table_19_as_string(soup: BeautifulSoup) -> str:
 #     lines = []
 #     #print(soup.prettify())
 #     table = soup.find("table", class_="sidearm-table sortable-table dataTable no-footer")
 #     print(table.prettify())
 
-soup = get_soup_object("https://gomountaineers.com/sports/womens-volleyball/stats/2025#individual", "Olive", "Rolseth")
-# table_19_string = get_table_19_as_string(soup)
-# print(table_19_string)
-print(get_game_table_as_string(soup))
+# soup = get_soup_object("https://gomountaineers.com/sports/womens-volleyball/stats/2025#individual", "Olive", "Rolseth")
+# game_table_string = get_game_table_as_string(soup)
+# game_stats_array = player_game_stats_string_to_dataclass_array(game_table_string, 1)
+
+# for game in game_stats_array:
+#     print(game)
+
+#game_stats_helper("Olive", "Rolseth", "Western Colorado University", "https://gomountaineers.com/sports/womens-volleyball/stats/2025#individual")
+
+print(db.get_game_statistics_by_pii_id(4))
+
+
+
