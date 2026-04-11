@@ -224,9 +224,8 @@ def player_career_stats_string_to_dataclass(career_stats_string: str, school: st
     return db.CareerStatistics(**mapped_values)
 
 
-def career_stats_helper(first_name: str, last_name: str, school: str) :
+def career_stats_helper(first_name: str, last_name: str, school: str, url: str):
     
-    url = "https://gomountaineers.com/sports/womens-volleyball/stats/2025#individual"
     offensive_url = url + "-overall-offensive"
     defensive_url = url + "-overall-defensive"
 

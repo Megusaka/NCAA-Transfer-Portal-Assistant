@@ -345,6 +345,15 @@ def get_career_statistics_by_player_id(player_id):
     else:
         print("No career statistics found for the given player ID.")
         return None
+    
+def get_player_identifying_information_by_pii_id(pii_id):
+    query = "SELECT * FROM player_identifying_information WHERE pii_id = ?"
+    results = execute_read(query, (pii_id,))
+    if results:
+        return results[0]
+    else:
+        print("No player found with the given PII ID.")
+        return None
 
 def get_game_statistics_by_pii_id(pii_id):
     query = "SELECT * FROM game_statistics WHERE pii_id = ?"

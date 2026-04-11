@@ -206,7 +206,7 @@ def game_stats_helper(first_name: str, last_name: str, school: str, url: str):
 
 #game_stats_helper("Olive", "Rolseth", "Western Colorado University", "https://gomountaineers.com/sports/womens-volleyball/stats/2025#individual")
 
-print(db.get_game_statistics_by_pii_id(4))
+#print(db.get_game_statistics_by_pii_id(4))
 
 
 
