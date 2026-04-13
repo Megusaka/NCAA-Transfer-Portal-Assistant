@@ -1,0 +1,151 @@
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #bfbfbf;
+    margin: 0;
+    padding: 0;
+}
+
+.container{
+    width: 900px;
+    margin: 40px auto;
+    text-align: center;
+}
+
+.title{
+    text-align: center;
+    font-size: 36px;
+    margin-bottom: 20px;
+}
+
+
+.navbar{
+    background-color: #1e272e;
+    padding: 15px 0;
+}
+
+.nav-container{
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+}
+
+.nav-container a{
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.nav-container a:hover{
+    color: #4da3ff;
+}
+
+
+.search-form{
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.form-group{
+    display: flex;
+    flex-direction: column;
+}
+
+input, select{
+    padding: 6px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+.nav-link{
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.nav-link:hover{
+    text-decoration: underline;
+}
+
+
+form{
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+label{
+    font-weight: bold;
+}
+
+input{
+    padding: 6px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+button, .tab-btn {
+    padding: 8px 16px;
+    border: none;
+    background-color: #2f80ed;
+    color: white;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover, .tab-btn:hover{
+    background-color: #1c60b8;
+}
+
+table{
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 30px;
+    background-color: white;
+}
+
+th, td{
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+}
+
+th{
+    background-color: #2f80ed;
+    color: white;
+}
+
+tr:nth-child(even){
+    background-color: #f2f2f2;
+}
+
+tr:hover{
+    background-color: #e8f0ff;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content:target {
+    display: block;
+}
+
+#tab-All {
+    display: block;
+}
+
+#tab-All:target {
+    display: block;
+}
+
+.tab-content:target ~ #tab-All {
+    display: none;
+}
