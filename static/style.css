@@ -130,6 +130,19 @@ tr:hover{
     background-color: #e8f0ff;
 }
 
+tr.status-0 { background-color: inherit; }
+tr.status-1 { background-color: #cdffd4; }
+tr.status-2 { background-color: #751717; }
+tr.status-3 { background-color: #f8d7da; }
+
+tr.status-1:nth-child(even),
+tr.status-2:nth-child(even),
+tr.status-3:nth-child(even) { background-color: inherit; }
+
+tr.status-1:hover { background-color: #ffe69c; }
+tr.status-2:hover { background-color: #a3cfbb; }
+tr.status-3:hover { background-color: #f1aeb5; }
+
 .tab-content {
     display: none;
 }
