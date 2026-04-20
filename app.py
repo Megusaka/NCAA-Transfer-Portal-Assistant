@@ -81,5 +81,12 @@ def toggle_favorite(pii_id):
         db.update_player_favorite_status(pii_id, new_status)
     return redirect(request.referrer)   #return to same page
 
+@app.route("/status/<int:pii_id>", methods=["POST"])
+def update_status(pii_id):
+    new_status = request.form.get("contact_status")
+    if new_status is not None:
+        db.update_player_contact_status(pii_id, int(new_status))
+    return redirect(request.referrer)
+
 if __name__ == "__main__":
     app.run(debug=True)
