@@ -82,7 +82,7 @@ def create_table_if_not_exists_player_identifying_information(connection):
     if connection is not None:
         try:
             cursor = connection.cursor()
-            #Contact Status: 0 = Not Contacted, 1 = In communication, 2 = Committed
+            #Contact Status: 0 = Not Contacted, 1 = In communication, 2 = Committed, 3 = Dropped
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS player_identifying_information (
                     pii_id INTEGER PRIMARY KEY AUTOINCREMENT,

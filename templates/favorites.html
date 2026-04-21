@@ -34,7 +34,7 @@
             {% for row in all_data %}
             {% if row.identifying.position == position %}
             {% set detail_url = url_for('player_detail', pii_id=row.identifying.pii_id) %}
-            <tr class="status-{{ row.identifying.contact_status }}" style="cursor:pointer;" onclick="window.location='{{ detail_url }}'">
+            <tr style="cursor:pointer;" onclick="window.location='{{ detail_url }}'">
                 <td>{{ row.identifying.first_name }}</td>
                 <td>{{ row.identifying.last_name }}</td>
                 <td>{{ row.identifying.school }}</td>
@@ -47,12 +47,13 @@
                 <td>{{ row.career.points or 'N/A' }}</td>
                 <td>
                     <form method="POST" action="{{ url_for('toggle_favorite', pii_id=row.identifying.pii_id) }}">
-                        <button type="submit" onclick="event.stopPropagation()">{{ '★' if row.identifying.is_favorite else '☆' }}</button>
+                        <button type="submit" class="fav-btn {% if row.identifying.is_favorite %}favorited{% endif %}">{{ '★' if row.identifying.is_favorite else '☆' }}
+                        </button>
                     </form>
                 </td>
-                <td>
+                <td onclick="event.stopPropagation()">
                     <form method="POST" action="{{ url_for('update_status', pii_id=row.identifying.pii_id) }}">
-                        <select name="contact_status" onchange="this.form.submit()" onclick="event.stopPropagation()">
+                        <select class="status-{{ row.identifying.contact_status }}" name="contact_status" onchange="this.form.submit()" onclick="event.stopPropagation()">
                             <option value="0" {% if row.identifying.contact_status == 0 %}selected{% endif %}>Not Contacted</option>
                             <option value="1" {% if row.identifying.contact_status == 1 %}selected{% endif %}>In Communication</option>
                             <option value="2" {% if row.identifying.contact_status == 2 %}selected{% endif %}>Committed</option>
@@ -81,7 +82,7 @@
         <tbody>
             {% for row in all_data %}
             {% set detail_url = url_for('player_detail', pii_id=row.identifying.pii_id) %}
-            <tr class="status-{{ row.identifying.contact_status }}" style="cursor:pointer;" onclick="window.location='{{ detail_url }}'">
+            <tr style="cursor:pointer;" onclick="window.location='{{ detail_url }}'">
                 <td>{{ row.identifying.first_name }}</td>
                 <td>{{ row.identifying.last_name }}</td>
                 <td>{{ row.identifying.school }}</td>
@@ -94,12 +95,13 @@
                 <td>{{ row.career.points or 'N/A' }}</td>
                 <td>
                     <form method="POST" action="{{ url_for('toggle_favorite', pii_id=row.identifying.pii_id) }}">
-                        <button type="submit">{{ '★' if row.identifying.is_favorite else '☆' }}</button>
+                    <button type="submit" class="fav-btn {% if row.identifying.is_favorite %}favorited{% endif %}">{{ '★' if row.identifying.is_favorite else '☆' }}
+                    </button>
                     </form>
                 </td>
-                <td>
+                <td onclick="event.stopPropagation()">
                     <form method="POST" action="{{ url_for('update_status', pii_id=row.identifying.pii_id) }}">
-                        <select name="contact_status" onchange="this.form.submit()" onclick="event.stopPropagation()">
+                        <select class="status-{{ row.identifying.contact_status }}" name="contact_status" onchange="this.form.submit()" onclick="event.stopPropagation()">
                             <option value="0" {% if row.identifying.contact_status == 0 %}selected{% endif %}>Not Contacted</option>
                             <option value="1" {% if row.identifying.contact_status == 1 %}selected{% endif %}>In Communication</option>
                             <option value="2" {% if row.identifying.contact_status == 2 %}selected{% endif %}>Committed</option>

@@ -1,7 +1,101 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Player Detail</h2>
+<div class="detail-layout">
 
+  <div class="stats-panel">
+    <div class="stats-panel-header">Career Stats</div>
+    <table class="stats-table">
+      <tbody>
+        {% set career = career[0] if career else {} %}
+        {% set rows = [
+          ("Sets Played",     career.sets_played),
+          ("Kills",           career.kills),
+          ("Kills / Set",     career.kills_per_set),
+          ("Errors",          career.errs),
+          ("Total Attempts",  career.total_attempts),
+          ("Attack %",        career.attack_percentage),
+          ("Assists",         career.assists),
+          ("Assists / Set",   career.assists_per_set),
+          ("Serve Aces",      career.serve_aces),
+          ("Serve Errors",    career.serve_errors),
+          ("Aces / Set",      career.serve_aces_per_set),
+          ("Reception Errors",career.reception_errors),
+          ("Digs",            career.digs),
+          ("Digs / Set",      career.digs_per_set),
+          ("Block Solos",     career.block_solos),
+          ("Block Assists",   career.block_assists),
+          ("Total Blocks",    career.blk),
+          ("Blocks / Set",    career.blk_per_s),
+          ("Block Errors",    career.block_errors),
+          ("BHE",             career.ball_handling_errors),
+          ("Points",          career.points),
+        ] %}
+        {% for label, value in rows %}
+        <tr>
+          <td class="stat-label">{{ label }}</td>
+          <td class="stat-value">{{ value if value is not none else 'N/A' }}</td>
+        </tr>
+        {% endfor %}
 
+        <tr class="stat-divider">
+          <td class="stat-label">Favorite</td>
+          <td class="stat-value">
+            <form method="POST" action="{{ url_for('toggle_favorite', pii_id=player.pii_id) }}">
+                    <button type="submit" class="fav-btn {% if player.is_favorite %}favorited{% endif %}">{{ '★' if player.is_favorite else '☆' }}
+                    </button>
+            </form>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="stat-label">Status</td>
+          <td class="stat-value">
+            <form method="POST" action="{{ url_for('update_status', pii_id=player.pii_id) }}">
+              <select class="status-{{ player.contact_status }}" name="contact_status" onchange="this.form.submit()">
+                <option value="0" {% if player.contact_status == 0 %}selected{% endif %}>Not Contacted</option>
+                <option value="1" {% if player.contact_status == 1 %}selected{% endif %}>In Communication</option>
+                <option value="2" {% if player.contact_status == 2 %}selected{% endif %}>Committed</option>
+                <option value="3" {% if player.contact_status == 3 %}selected{% endif %}>Dropped</option>
+              </select>
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="detail-main">
+    <div class="player-header card">
+      <div class="player-avatar">
+        {{ player.first_name[0] }}{{ player.last_name[0] }}
+      </div>
+      <div>
+        <h2>{{ player.first_name }} {{ player.last_name }}</h2>
+        <p class="player-sub">{{ player.position }} · {{ player.school }}</p>
+      </div>
+    </div>
+
+    <div class="player-meta card">
+      <div class="meta-item">
+        <span class="meta-label">Hometown</span>
+        <span>{{ player.hometown or 'N/A' }}</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Eligibility</span>
+        <span>{{ player.eligibility or 'N/A' }}</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Height</span>
+        <span>{{ player.height or 'N/A' }}</span>
+      </div>
+    </div>
+
+    {# Game log placeholder — wire up later #}
+    <div class="card" style="text-align:center; color:#888; font-style:italic; padding: 24px;">
+      Game log coming soon
+    </div>
+  </div>
+
+</div>
 {% endblock %}

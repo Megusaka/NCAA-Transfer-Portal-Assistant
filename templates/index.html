@@ -76,7 +76,8 @@
             <td>{{ player.career.points or 'N/A' }}</td>
             <td>
                 <form method="POST" action="{{ url_for('toggle_favorite', pii_id=player.identifying.pii_id) }}">
-                    <button type="submit" onclick="event.stopPropagation()">{{ '★' if player.identifying.is_favorite else '☆' }}</button>
+                    <button type="submit" class="fav-btn {% if player.identifying.is_favorite %}favorited{% endif %}">{{ '★' if player.identifying.is_favorite else '☆' }}
+                    </button>
                 </form>
             </td>
         </tr>
