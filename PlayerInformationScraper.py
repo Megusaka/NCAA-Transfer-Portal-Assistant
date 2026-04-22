@@ -21,7 +21,6 @@ def split_name(full_name: str) -> (str, str):
         return parts[1], parts[0]
     return full_name, ""
 
-# Helper to automatically cast strings to int or float
 def auto_cast(value: str):
     if not value or value == "-": 
         return None
@@ -40,7 +39,7 @@ def get_soup_object(url: str, first_name: str, last_name: str) -> BeautifulSoup:
     chrome_options.add_argument("--window-size=1920,1080")
 
     driver = webdriver.Chrome(options=chrome_options)
-    #driver = webdriver.Chrome()
+    #driver = webdriver.Chrome() # Used for demos when we want to show the browser doing its thing
     driver.get(url)
 
     WebDriverWait(driver, 10).until(
@@ -76,10 +75,8 @@ def get_details_string(soup: BeautifulSoup) -> str:
     if details:
         for dc in details.find_all("div", class_="content"):
             
-            #print(dc.prettify())
             di = dc.find_all("div", class_="details")
             for d in di:
-                #print(d.prettify())
                 dts = d.find_all("dt")
                 dds = d.find_all("dd")
                 for dt, dd in zip(dts, dds):
@@ -103,7 +100,6 @@ def player_identifying_info_string_to_dataclass(pii_string: str, first_name: str
             continue
 
         label, value = line.split(": ", 1)
-        #print(f"Label: '{label}', Value: '{value}'")
 
         if label in LABEL_MAP:
             field_name = LABEL_MAP[label]
@@ -116,8 +112,6 @@ def player_identifying_info_string_to_dataclass(pii_string: str, first_name: str
     mapped_values["is_favorite"] = False
     mapped_values["contact_status"] = 0
 
-    #print(mapped_values)
-
     return db.PlayerIdentifyingInformation(**mapped_values)
 
 def pii_helper(first_name: str, last_name: str, school: str, url: str):
@@ -126,9 +120,14 @@ def pii_helper(first_name: str, last_name: str, school: str, url: str):
     information_string = get_details_string(soup)
     pii_object = player_identifying_info_string_to_dataclass(information_string, first_name, last_name, school)
 
-    db.insert_into_player_identifying_information(pii_object)
+    if db.get_pii_id_by_name_and_school(first_name, last_name, school) is None:
+        print("We're inserting into pii")
+        db.insert_into_player_identifying_information(pii_object)
+    else:
+        print("We're updating pii")
+        db.update_player_identifying_information(pii_object)
 
-#pii_helper("Olive", "Rolseth", "Western Colorado University", "https://gomountaineers.com/sports/womens-volleyball/stats/2025#individual")
+#pii_helper("Kaira", "Willits", "Western Colorado University", "https://gomountaineers.com/sports/womens-volleyball/stats/2025#individual")
     
 #print(db.get_all_player_data())
 # soup = get_soup_object("https://gomountaineers.com/sports/womens-volleyball/stats/2025#individual", "Nina", "Cowan")

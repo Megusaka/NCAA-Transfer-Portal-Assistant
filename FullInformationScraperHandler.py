@@ -33,7 +33,7 @@ def full_player_scrape_handler(first_name: str, last_name: str, school: str):
     gss.game_stats_helper(first_name, last_name, school, url)
 
 
-# full_player_scrape_handler("Jaylee", "Gonzales", "New Mexico Highlands")
+#full_player_scrape_handler("Lilinoe", "Nahinu", "Western Colorado University")
 # pii_id = db.get_pii_id_by_name_and_school("Jaylee", "Gonzales", "New Mexico Highlands")
 # print(db.get_player_identifying_information_by_pii_id(pii_id))
 # print("\n")

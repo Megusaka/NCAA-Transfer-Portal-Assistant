@@ -34,7 +34,6 @@ def split_name(full_name: str) -> (str, str):
         return parts[1], parts[0]
     return full_name, ""
 
-# Helper to automatically cast strings to int or float
 def auto_cast(value: str):
     if not value or value == "-": 
         return None
@@ -60,7 +59,7 @@ def get_soup_object(url: str, first_name: str, last_name: str) -> BeautifulSoup:
     )
 
     # Find the link by matching the player's name in the anchor text
-    player_name = f"{last_name}, {first_name}"  # matches format "Rolseth, Olive"
+    player_name = f"{last_name}, {first_name}"
     player_link = driver.find_element(By.LINK_TEXT, player_name)
     player_link.click()
 
@@ -95,7 +94,6 @@ def get_game_table_as_string(soup: BeautifulSoup) -> str:
     if not target_table:
         return "Game By Game table not found"
 
-    # 1. Extract headers dynamically
     thead = target_table.find("thead")
     if not thead:
         return "No header found in table"
@@ -103,31 +101,24 @@ def get_game_table_as_string(soup: BeautifulSoup) -> str:
     header_rows = thead.find_all("tr")
     labels = []
     
-    # The table has two header rows. Some headers span 2 rows (rowspan="2"), 
-    # while others are grouped under categories (colspan).
     if len(header_rows) >= 2:
         top_headers = header_rows[0].find_all("th")
         bottom_headers = header_rows[1].find_all("th")
         
-        # We know Date, Opponent, and SP are the first three (rowspan=2)
-        labels.append(top_headers[0].get_text(strip=True)) # Date
-        labels.append(top_headers[1].get_text(strip=True)) # Opponent
-        labels.append(top_headers[2].get_text(strip=True)) # SP
+        labels.append(top_headers[0].get_text(strip=True))
+        labels.append(top_headers[1].get_text(strip=True))
+        labels.append(top_headers[2].get_text(strip=True))
         
-        # The next headers come from the second row (K, E, TA, PCT, AST, etc.)
         for th in bottom_headers:
             labels.append(th.get_text(strip=True))
             
-        # The last header (BHE) is at the end of the top row (rowspan=2)
         labels.append(top_headers[-1].get_text(strip=True))
     else:
-        # Fallback if there's only one header row for some reason
         print("We fell back")
         labels = [th.get_text(strip=True) for th in header_rows[0].find_all("th")]
 
     print(labels)
 
-    # 2. Extract and format the data rows
     tbody = target_table.find("tbody")
     if not tbody:
         return "No data body found"
@@ -135,7 +126,6 @@ def get_game_table_as_string(soup: BeautifulSoup) -> str:
     rows = tbody.find_all("tr")
     
     for row in rows:
-        # We need to find both 'td' and 'th' because 'Opponent' is in a <th> tag
         cells = row.find_all(["td", "th"])
         
         if not cells or len(cells) != len(labels):
@@ -143,7 +133,6 @@ def get_game_table_as_string(soup: BeautifulSoup) -> str:
 
         lines.append("Next Game")
         for label, cell in zip(labels, cells):
-            # If there's an anchor tag (like in Opponent), get text from it cleanly
             value = cell.get_text(separator=" ", strip=True)
             lines.append(f"  {label}: {value}")
 
@@ -189,13 +178,13 @@ def game_stats_helper(first_name: str, last_name: str, school: str, url: str):
     game_stats_array = player_game_stats_string_to_dataclass_array(game_table_string, pii_id)
 
     for game_stat in game_stats_array:
-        db.insert_game_statistics(game_stat)
-
-# def get_table_19_as_string(soup: BeautifulSoup) -> str:
-#     lines = []
-#     #print(soup.prettify())
-#     table = soup.find("table", class_="sidearm-table sortable-table dataTable no-footer")
-#     print(table.prettify())
+        game_in_db = db.get_game_id_by_date_and_opponent(game_stat)
+        if not game_in_db:
+            print("We're inserting game statistics")
+            db.insert_game_statistics(game_stat)
+        else:
+            print("We're updating game statistics")
+            db.update_game_statistics(game_stat)
 
 # soup = get_soup_object("https://gomountaineers.com/sports/womens-volleyball/stats/2025#individual", "Olive", "Rolseth")
 # game_table_string = get_game_table_as_string(soup)
@@ -204,7 +193,7 @@ def game_stats_helper(first_name: str, last_name: str, school: str, url: str):
 # for game in game_stats_array:
 #     print(game)
 
-#game_stats_helper("Olive", "Rolseth", "Western Colorado University", "https://gomountaineers.com/sports/womens-volleyball/stats/2025#individual")
+#game_stats_helper("Breanna", "Nohava", "Western Colorado University", "https://gomountaineers.com/sports/womens-volleyball/stats/2025#individual")
 
 #print(db.get_game_statistics_by_pii_id(4))
 

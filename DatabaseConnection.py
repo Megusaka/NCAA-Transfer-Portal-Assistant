@@ -376,6 +376,16 @@ def get_all_game_statistics():
     query = "SELECT * FROM game_statistics"
     return execute_read(query, ())
 
+def get_game_id_by_date_and_opponent(game_stats: GameStatistics):
+    query = "SELECT * FROM game_statistics WHERE pii_id = ? AND game_date = ? AND opponent = ?"
+    params = (game_stats.pii_id, game_stats.game_date, game_stats.opponent)
+    results = execute_read(query, params)
+    if results:
+        return results[0][0]
+    else:
+        print("No game statistics found for the given date and opponent.")
+        return None
+
 ##logan's gets
 def get_all_player_data():
     query = "SELECT * FROM player_identifying_information"
@@ -408,6 +418,30 @@ def execute_update(query, params):
 def update_player_school(pii_id, new_school):
     query = "UPDATE player_identifying_information SET school = ? WHERE pii_id = ?"
     params = (new_school, pii_id)
+    execute_update(query, params)
+
+def update_player_identifying_information(pii):
+    query = """
+    UPDATE player_identifying_information SET 
+    first_name = ?, 
+    last_name = ?, 
+    school = ?, 
+    hometown = ?, 
+    eligibility = ?, 
+    position = ?, 
+    height = ?
+    WHERE pii_id = ?
+    """
+    params = (
+        pii.first_name, 
+        pii.last_name, 
+        pii.school, 
+        pii.hometown, 
+        pii.eligibility, 
+        pii.position, 
+        pii.height,
+        pii.pii_id
+    )
     execute_update(query, params)
 
 def update_career_statistics(career_stats):

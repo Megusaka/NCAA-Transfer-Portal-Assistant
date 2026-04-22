@@ -1,5 +1,3 @@
-from cProfile import label
-
 from bs4 import BeautifulSoup
 from collections import defaultdict
 from selenium import webdriver
@@ -7,7 +5,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.chrome.options import Options
 import DatabaseConnection as db
-
 
 LABEL_MAP = {
     ("SP", 0): "sets_played",
@@ -39,7 +36,6 @@ def split_name(full_name: str) -> (str, str):
         return parts[1], parts[0]
     return full_name, ""
 
-# Helper to automatically cast strings to int or float
 def auto_cast(value: str):
     if not value or value == "-": 
         return None
@@ -66,7 +62,7 @@ def get_soup_object(url: str) -> BeautifulSoup:
     driver.quit()
     return soup
 
-def get_table0_string(soup: BeautifulSoup, first_name: str, last_name: str) -> str:
+def get_offensive_stats_string(soup: BeautifulSoup, first_name: str, last_name: str) -> str:
     lines = []
     table0 = soup.find("table", id="DataTables_Table_0")
     if table0:
@@ -114,7 +110,7 @@ def get_table0_string(soup: BeautifulSoup, first_name: str, last_name: str) -> s
     return "\n".join(lines)
 
 
-def get_table1_string(soup: BeautifulSoup, first_name: str, last_name: str) -> str:
+def get_defensive_stats_string(soup: BeautifulSoup, first_name: str, last_name: str) -> str:
     lines = []
     table1 = soup.find("table", id="DataTables_Table_1")
     if table1:
@@ -160,29 +156,6 @@ def get_table1_string(soup: BeautifulSoup, first_name: str, last_name: str) -> s
         lines.append("No table found")
         
     return "\n".join(lines)
-
-# def get_table1_string(soup: BeautifulSoup) -> str:
-#     lines = []
-#     table1 = soup.find("table", id="DataTables_Table_1")
-#     if table1:
-#         for row in table1.find_all("tr"):
-#             cells = row.find_all("td")
-#             if not cells:
-#                 continue
-
-#             lines.append("Next Player")
-#             for cell in cells:
-#                 label = cell.get("data-label")
-#                 name_tag = cell.find("a", {"data-player-id": True})
-#                 if name_tag:
-#                     label = "Player"
-#                     value = name_tag.get_text(strip=True)
-#                 else:
-#                     value = cell.text.strip()
-#                 lines.append(f"  {label}: {value}")
-#     else:
-#         lines.append("No table found")
-#     return "\n".join(lines)
 
 def player_career_stats_string_to_dataclass(career_stats_string: str, school: str) -> db.CareerStatistics:
 
@@ -232,26 +205,33 @@ def career_stats_helper(first_name: str, last_name: str, school: str, url: str):
     offensive_soup_object = get_soup_object(offensive_url)
     defensive_soup_object = get_soup_object(defensive_url)
 
-    offensive_string = get_table0_string(offensive_soup_object, first_name, last_name)
-    defensive_string = get_table1_string(defensive_soup_object, first_name, last_name)
+    offensive_string = get_offensive_stats_string(offensive_soup_object, first_name, last_name)
+    defensive_string = get_defensive_stats_string(defensive_soup_object, first_name, last_name)
 
     full_career_string = offensive_string + "\n" + defensive_string
 
     career_stats = player_career_stats_string_to_dataclass(full_career_string, school)
 
-    db.insert_into_career_statistics(career_stats)
+    career_stats_in_db = db.get_career_statistics_by_pii_id(career_stats.pii_id)
+    if not career_stats_in_db:
+        print("We're inserting into career stats")
+        db.insert_into_career_statistics(career_stats)
+    else:
+        print("We're updating career stats")
+        db.update_career_statistics(career_stats)
 
-#career_stats_helper("Nina", "Cowan", "Western Colorado University")
+# career_stats_helper("Kaira", "Willits", "Western Colorado University", "https://gomountaineers.com/sports/womens-volleyball/stats/2025#individual-overall-defensive")
+# print(str(db.get_career_statistics_by_pii_id(db.get_pii_id_by_name_and_school("Kaira", "Willits", "Western Colorado University"))))
 
 # offensive = get_soup_object("https://gomountaineers.com/sports/womens-volleyball/stats/2025#individual-overall-offensive")
 # defensive = get_soup_object("https://gomountaineers.com/sports/womens-volleyball/stats/2025#individual-overall-defensive")
 
-# full_career_string = get_table0_string(offensive, "Olive", "Rolseth") + "\n" + get_table1_string(defensive, "Olive", "Rolseth")
+# full_career_string = get_offensive_stats_string(offensive, "Olive", "Rolseth") + "\n" + get_defensive_stats_string(defensive, "Olive", "Rolseth")
 
 # print(player_career_stats_string_to_dataclass(full_career_string, "Western Colorado University"))
 
-# print(get_table0_string(offensive, "Olive", "Rolseth"))
-# print(get_table1_string(defensive, "Olive", "Rolseth"))
+# print(get_offensive_stats_string(offensive, "Olive", "Rolseth"))
+# print(get_defensive_stats_string(defensive, "Olive", "Rolseth"))
 
 #print(get_career_stats("Olivia", "Rolseth", "Western Colorado University"))
 
