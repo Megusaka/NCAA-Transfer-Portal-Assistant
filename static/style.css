@@ -257,3 +257,141 @@ select.status-3 { background-color: #f8d7da; color: #58151c; border-radius: 12px
 .player-meta { display: flex; gap: 24px; font-size: 13px; }
 .meta-item { display: flex; flex-direction: column; gap: 2px; }
 .meta-label { color: #888; font-size: 12px; }
+
+.section-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #C4122F;
+    margin-bottom: 12px;
+}
+
+.rankings-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+ 
+.rank-box {
+    background: #f7f7f7;
+    border: 1px solid #e8e8e8;
+    border-radius: 6px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    transition: box-shadow 0.15s;
+}
+ 
+.rank-box:hover {
+    box-shadow: 0 2px 8px rgba(196, 18, 47, 0.12);
+    border-color: #C4122F;
+}
+ 
+.rank-stat-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #888;
+}
+ 
+.rank-value {
+    font-size: 26px;
+    font-weight: 800;
+    color: #1e272e;
+    line-height: 1.1;
+}
+ 
+.rank-out-of {
+    font-size: 11px;
+    color: #aaa;
+}
+ 
+
+.charts-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+ 
+.chart-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+ 
+.trend-select {
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 10px;
+    border: none;
+    background-color: #e0e0e0;
+    color: #333;
+    font-weight: 600;
+    cursor: pointer;
+}
+ 
+.chart-box {
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    background: #fafafa;
+    border: 1px dashed #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+ 
+.chart-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+ 
+.chart-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: #ccc;
+    font-size: 13px;
+    font-style: italic;
+}
+ 
+
+.notes-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+ 
+.notes-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333;
+    resize: vertical;
+    transition: border-color 0.15s;
+}
+ 
+.notes-textarea:focus {
+    outline: none;
+    border-color: #C4122F;
+    box-shadow: 0 0 0 2px rgba(196, 18, 47, 0.08);
+}
+ 
+.notes-footer {
+    display: flex;
+    justify-content: flex-end;
+}

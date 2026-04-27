@@ -94,7 +94,8 @@ def create_table_if_not_exists_player_identifying_information(connection):
                     position TEXT,
                     height TEXT,
                     is_favorite BOOLEAN DEFAULT 0,
-                    contact_status INTEGER DEFAULT 0 
+                    contact_status INTEGER DEFAULT 0,
+                    notes TEXT
                 )
             """)
             connection.commit()
@@ -405,6 +406,10 @@ def execute_update(query, params):
     else:
         print("Failed to connect to the database.")
 
+def update_player_notes(pii_id, notes):
+    query = "UPDATE player_identifying_information SET notes = ? WHERE pii_id = ?"
+    execute_update(query, (notes, pii_id))
+
 def update_player_school(pii_id, new_school):
     query = "UPDATE player_identifying_information SET school = ? WHERE pii_id = ?"
     params = (new_school, pii_id)
@@ -589,5 +594,3 @@ if conn is not None:
 #print(get_career_statistics_by_pii_id(1))
 
 #print(get_all_game_statistics())
-
-
