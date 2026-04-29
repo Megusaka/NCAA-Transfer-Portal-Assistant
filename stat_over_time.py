@@ -12,7 +12,7 @@ class GameStatistics:
     errs: int
     total_attempts: int
     attack_percentage: float
-    assits: int 
+    assists: int 
     serve_aces: int
     serve_errors: int
     reception_errors: int
@@ -33,7 +33,7 @@ g1 = GameStatistics(
     errs=5,
     total_attempts=38,
     attack_percentage=0.184, 
-    assits=2,
+    assists=2,
     serve_aces=1,
     serve_errors=2,
     reception_errors=1,
@@ -55,7 +55,7 @@ g2 = GameStatistics(
     errs=7,
     total_attempts=52,
     attack_percentage=0.212,
-    assits=1,
+    assists=1,
     serve_aces=3,
     serve_errors=4,
     reception_errors=2,
@@ -77,7 +77,7 @@ g3 = GameStatistics(
     errs=1,
     total_attempts=19,
     attack_percentage=0.316,
-    assits=0,
+    assists=0,
     serve_aces=0,
     serve_errors=1,
     reception_errors=0,
@@ -99,7 +99,7 @@ g4 = GameStatistics(
     errs=1,
     total_attempts=19,
     attack_percentage=0.316,
-    assits=0,
+    assists=0,
     serve_aces=0,
     serve_errors=1,
     reception_errors=0,
@@ -121,7 +121,7 @@ g5 = GameStatistics(
     errs=1,
     total_attempts=19,
     attack_percentage=0.316,
-    assits=0,
+    assists=0,
     serve_aces=0,
     serve_errors=1,
     reception_errors=0,
@@ -143,7 +143,7 @@ g6 = GameStatistics(
     errs=0,
     total_attempts=0,
     attack_percentage=0.0,
-    assits=0,
+    assists=0,
     serve_aces=0,
     serve_errors=0,
     reception_errors=0,
@@ -158,19 +158,63 @@ g6 = GameStatistics(
 
 test_games = [g1, g2, g3, g4, g5, g6]
 
+import DatabaseConnection as db
+
+def get_all_games_for_pii_id_as_dataclass_array(pii_id: int) -> list[db.GameStatistics]:
+    query = "SELECT * FROM game_statistics WHERE pii_id = ?"
+    params = (pii_id,)
+    results = db.execute_read(query, params)
+    
+    games = []
+    for row in results:
+        game = db.GameStatistics(
+            game_id=row[0],
+            game_date=row[1],
+            opponent=row[2],
+            sets_played=row[3],
+            kills=row[4],
+            errs=row[5],
+            total_attempts=row[6],
+            attack_percentage=row[7],
+            assists=row[8],
+            serve_aces=row[9],
+            serve_errors=row[10],
+            reception_errors=row[11],
+            digs=row[12],
+            block_solos=row[13],
+            block_assists=row[14],
+            block_errors=row[15],
+            ball_handling_errors=row[16],
+            total_blocks=row[17],
+            pii_id=row[18]
+        )
+        games.append(game)
+    return games
+
 
 def plot_stat_over_games(games, stat_name):
     stat_values = [getattr(game, stat_name) for game in games]
-    sorted_game_dates = sorted(games, key=lambda g: g.game_date)
-    game_dates = [g.game_date for g in sorted_game_dates]
+    avg_value = sum(stat_values) / len(stat_values) if stat_values else 0
+
+    game_dates = []
+    for game in games:
+        # Slices from the start to the 5th character. "10/11/2025" -> "10/11"
+        date_str = game.game_date.rsplit('/', 1)[0]
+        game_dates.append(date_str)
 
     plt.figure(figsize=(10, 5))
+
     plt.plot(game_dates, stat_values, marker='o')
+    for i, val in enumerate(stat_values):
+        plt.annotate(f"{val}",  (game_dates[i], val), textcoords="offset points", xytext=(0, 10), ha='center')
+
+    plt.axhline(avg_value, color='red', linestyle='--', label=f'Average: {avg_value:.2f}')
     plt.title(f'{stat_name.replace("_", " ").title()} Over Games')
     plt.xlabel('Game Date')
     plt.ylabel(stat_name.replace("_", " ").title())
     plt.xticks(rotation=45)
     plt.grid()
+    plt.legend()
     plt.tight_layout()
     plt.show()
 
@@ -216,7 +260,13 @@ def percent_of_games_played(games):
 # print(f"Kill increases: {x:.2f}%")
 # print(f"Kill decreases: {y:.2f}%")
 
-a, b = percent_of_games_played(test_games)
-print(f"Games played: {a:.2f}%")
-print(f"Games not played: {b:.2f}%")
+# a, b = percent_of_games_played(test_games)
+# print(f"Games played: {a:.2f}%")
+# print(f"Games not played: {b:.2f}%")
 
+games = get_all_games_for_pii_id_as_dataclass_array(14)
+
+plot_stat_over_games(games, 'kills')
+
+# for g in games:
+#     print(g.game_date, g.opponent, g.kills)
