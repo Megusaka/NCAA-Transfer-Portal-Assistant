@@ -174,7 +174,7 @@ def get_db_connection():
     db_filepath = "transferPortalAssistant.db"
     try:
         connection = sqlite3.connect(db_filepath)
-        #connection.row_factory = sqlite3.Row
+        connection.row_factory = sqlite3.Row
         create_table_if_not_exists_player_identifying_information(connection)
         create_table_if_not_exists_career_statistics(connection)
         create_table_if_not_exists_game_statistics(connection)
@@ -625,6 +625,6 @@ if conn is not None:
 # print(get_all_player_data())
 
 #print(get_all_career_statistics())
-#print(get_career_statistics_by_pii_id(1))
+print(get_career_statistics_by_pii_id(1))
 
 #print(get_all_game_statistics())
