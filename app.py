@@ -72,7 +72,7 @@ def player_detail(pii_id):
 
     return render_template("player_detail.html", player=player, career=career_stats)
 
-@app.route("/favorite/<int:pii_id>", methods=["POST"])
+@app.route("/favorite/<int:pii_id>", methods=["POST"]) #update favorites
 def toggle_favorite(pii_id):
     players = db.get_all_player_data()
     player = next((p for p in players if p["pii_id"] == pii_id), None)
@@ -80,6 +80,19 @@ def toggle_favorite(pii_id):
         new_status = 0 if player["is_favorite"] else 1
         db.update_player_favorite_status(pii_id, new_status)
     return redirect(request.referrer)   #return to same page
+
+@app.route("/status/<int:pii_id>", methods=["POST"]) #update status
+def update_status(pii_id):
+    new_status = request.form.get("contact_status")
+    if new_status is not None:
+        db.update_player_contact_status(pii_id, int(new_status))
+    return redirect(request.referrer)
+
+@app.route("/notes/<int:pii_id>", methods=["POST"]) #update notes
+def update_notes(pii_id):
+    notes = request.form.get("notes", "")
+    db.update_player_notes(pii_id, notes)
+    return redirect(request.referrer)
 
 if __name__ == "__main__":
     app.run(debug=True)

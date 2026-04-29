@@ -1,7 +1,238 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Player Detail</h2>
+<div class="page-wrap">
+
+  <!-- ── ROW 1: Name + Meta ──────────────────────────────────── -->
+  <div class="top-section">
+
+    <div class="card player-header">
+      <div class="player-avatar">
+        {{ player.first_name[0] }}{{ player.last_name[0] }}
+      </div>
+      <div>
+        <h2>{{ player.first_name }} {{ player.last_name }}</h2>
+        <p class="player-sub">{{ player.position }} · {{ player.school }}</p>
+      </div>
+    </div>
+
+    <div class="card player-meta">
+      <div class="meta-item">
+        <span class="meta-label">Hometown</span>
+        <span>{{ player.hometown or 'N/A' }}</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Eligibility</span>
+        <span>{{ player.eligibility or 'N/A' }}</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Height</span>
+        <span>{{ player.height or 'N/A' }}</span>
+      </div>
+    </div>
+
+  </div>{# /top-section #}
 
 
+  <!-- ── ROW 2: Career Stats (left) | Notes + Overview Chart (right) ── -->
+  <div class="middle-section">
+
+    <!-- Left: Career Stats panel -->
+    <div class="stats-panel">
+      <div class="stats-panel-header">Career Stats</div>
+      <table class="stats-table">
+        <tbody>
+          {% set career = career[0] if career else {} %}
+          {% set rows = [
+            ("Sets Played",     career.sets_played),
+            ("Kills",           career.kills),
+            ("Kills / Set",     career.kills_per_set),
+            ("Errors",          career.errs),
+            ("Total Attempts",  career.total_attempts),
+            ("Attack %",        career.attack_percentage),
+            ("Assists",         career.assists),
+            ("Assists / Set",   career.assists_per_set),
+            ("Serve Aces",      career.serve_aces),
+            ("Serve Errors",    career.serve_errors),
+            ("Aces / Set",      career.serve_aces_per_set),
+            ("Reception Errors",career.reception_errors),
+            ("Digs",            career.digs),
+            ("Digs / Set",      career.digs_per_set),
+            ("Block Solos",     career.block_solos),
+            ("Block Assists",   career.block_assists),
+            ("Total Blocks",    career.blk),
+            ("Blocks / Set",    career.blk_per_s),
+            ("Block Errors",    career.block_errors),
+            ("BHE",             career.ball_handling_errors),
+            ("Points",          career.points),
+          ] %}
+          {% for label, value in rows %}
+          <tr>
+            <td class="stat-label">{{ label }}</td>
+            <td class="stat-value">{{ value if value is not none else 'N/A' }}</td>
+          </tr>
+          {% endfor %}
+
+          <tr class="stat-divider">
+            <td class="stat-label">Favorite</td>
+            <td class="stat-value">
+              <form method="POST" action="{{ url_for('toggle_favorite', pii_id=player.pii_id) }}">
+                <button type="submit" class="fav-btn {% if player.is_favorite %}favorited{% endif %}">
+                  {{ '★' if player.is_favorite else '☆' }}
+                </button>
+              </form>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="stat-label">Status</td>
+            <td class="stat-value">
+              <form method="POST" action="{{ url_for('update_status', pii_id=player.pii_id) }}">
+                <select class="status-{{ player.contact_status }}" name="contact_status" onchange="this.form.submit()">
+                  <option value="0" {% if player.contact_status == 0 %}selected{% endif %}>Not Contacted</option>
+                  <option value="1" {% if player.contact_status == 1 %}selected{% endif %}>In Communication</option>
+                  <option value="2" {% if player.contact_status == 2 %}selected{% endif %}>Committed</option>
+                  <option value="3" {% if player.contact_status == 3 %}selected{% endif %}>Dropped</option>
+                </select>
+              </form>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>{# /stats-panel #}
+
+    <!-- Right: Notes on top, Overview Chart below -->
+    <div class="middle-right">
+
+      <div class="card">
+        <div class="section-label">Scout Notes</div>
+        <form method="POST" action="{{ url_for('update_notes', pii_id=player.pii_id) }}" class="notes-form">
+          <textarea
+            name="notes"
+            class="notes-textarea"
+            placeholder="Add scouting notes, observations, contact history…"
+            rows="4"
+          >{{ player.notes or '' }}</textarea>
+          <div class="notes-footer">
+            <button type="submit">Save Notes</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card chart-fill">
+        <div class="section-label">Performance Overview</div>
+        <div class="chart-box">
+          {% if overview_chart %}
+            <img src="data:image/png;base64,{{ overview_chart }}" alt="Performance overview chart">
+          {% else %}
+            <div class="chart-placeholder">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <path d="M3 9h18M9 21V9"/>
+              </svg>
+              <span>Chart pending</span>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>{# /middle-right #}
+
+  </div>{# /middle-section #}
+
+
+  <!-- ── ROW 3: Trend Chart | Peer Rankings | Game Log ──────── -->
+  <div class="bottom-section">
+
+    <!-- Stat over time chart -->
+    <div class="card">
+      <div class="chart-card-header">
+        <div class="section-label" style="margin-bottom:0;">Stat Over Time</div>
+        <form method="GET" action="" id="stat-trend-form">
+          <select name="trend_stat" class="trend-select" onchange="document.getElementById('stat-trend-form').submit()">
+            {% set stat_options = [
+              ("kills_per_set",      "Kills / Set"),
+              ("attack_percentage",  "Attack %"),
+              ("assists_per_set",    "Assists / Set"),
+              ("serve_aces_per_set", "Aces / Set"),
+              ("digs_per_set",       "Digs / Set"),
+              ("blk_per_s",          "Blocks / Set"),
+              ("points",             "Points"),
+            ] %}
+            {% for val, label in stat_options %}
+            <option value="{{ val }}" {% if selected_trend_stat == val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </form>
+      </div>
+      <div class="chart-box chart-box--wide">
+        {% if trend_chart %}
+          <img src="data:image/png;base64,{{ trend_chart }}" alt="Stat trend chart">
+        {% else %}
+          <div class="chart-placeholder">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5">
+              <polyline points="3 17 8 12 13 15 21 7"/>
+              <path d="M3 20h18M3 4v16"/>
+            </svg>
+            <span>Chart pending</span>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Peer Rankings -->
+    <div class="card">
+      <div class="section-label">Peer Rankings</div>
+      <div class="rankings-grid">
+
+        <div class="rank-box">
+          <span class="rank-stat-label">Kills / Set</span>
+          <span class="rank-value">{{ player_ranks.kills_per_set_rank if player_ranks else '—' }}</span>
+          <span class="rank-out-of">of {{ player_ranks.total if player_ranks else '—' }}</span>
+        </div>
+
+        <div class="rank-box">
+          <span class="rank-stat-label">Attack %</span>
+          <span class="rank-value">{{ player_ranks.attack_pct_rank if player_ranks else '—' }}</span>
+          <span class="rank-out-of">of {{ player_ranks.total if player_ranks else '—' }}</span>
+        </div>
+
+        <div class="rank-box">
+          <span class="rank-stat-label">Aces / Set</span>
+          <span class="rank-value">{{ player_ranks.aces_per_set_rank if player_ranks else '—' }}</span>
+          <span class="rank-out-of">of {{ player_ranks.total if player_ranks else '—' }}</span>
+        </div>
+
+        <div class="rank-box">
+          <span class="rank-stat-label">Digs / Set</span>
+          <span class="rank-value">{{ player_ranks.digs_per_set_rank if player_ranks else '—' }}</span>
+          <span class="rank-out-of">of {{ player_ranks.total if player_ranks else '—' }}</span>
+        </div>
+
+        <div class="rank-box">
+          <span class="rank-stat-label">Blocks / Set</span>
+          <span class="rank-value">{{ player_ranks.blk_per_set_rank if player_ranks else '—' }}</span>
+          <span class="rank-out-of">of {{ player_ranks.total if player_ranks else '—' }}</span>
+        </div>
+
+        <div class="rank-box">
+          <span class="rank-stat-label">Points</span>
+          <span class="rank-value">{{ player_ranks.points_rank if player_ranks else '—' }}</span>
+          <span class="rank-out-of">of {{ player_ranks.total if player_ranks else '—' }}</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Game Log -->
+    <div class="card game-log-card">
+      <div class="section-label">Game Log</div>
+      <div style="text-align:center; color:#888; font-style:italic; padding: 24px;">
+        Game log coming soon
+      </div>
+    </div>
+
+  </div>{# /bottom-section #}
+
+</div>{# /page-wrap #}
 {% endblock %}

@@ -27,6 +27,7 @@
                 <th>Blocks/Set</th>
                 <th>Points</th>
                 <th>Favorite</th>
+                <th>Status</th>
             </tr>
         </thead>
         <tbody>
@@ -46,7 +47,18 @@
                 <td>{{ row.career.points or 'N/A' }}</td>
                 <td>
                     <form method="POST" action="{{ url_for('toggle_favorite', pii_id=row.identifying.pii_id) }}">
-                        <button type="submit" onclick="event.stopPropagation()">{{ '★' if row.identifying.is_favorite else '☆' }}</button>
+                        <button type="submit" class="fav-btn {% if row.identifying.is_favorite %}favorited{% endif %}">{{ '★' if row.identifying.is_favorite else '☆' }}
+                        </button>
+                    </form>
+                </td>
+                <td onclick="event.stopPropagation()">
+                    <form method="POST" action="{{ url_for('update_status', pii_id=row.identifying.pii_id) }}">
+                        <select class="status-{{ row.identifying.contact_status }}" name="contact_status" onchange="this.form.submit()" onclick="event.stopPropagation()">
+                            <option value="0" {% if row.identifying.contact_status == 0 %}selected{% endif %}>Not Contacted</option>
+                            <option value="1" {% if row.identifying.contact_status == 1 %}selected{% endif %}>In Communication</option>
+                            <option value="2" {% if row.identifying.contact_status == 2 %}selected{% endif %}>Committed</option>
+                            <option value="3" {% if row.identifying.contact_status == 3 %}selected{% endif %}>Dropped</option>
+                        </select>
                     </form>
                 </td>
             </tr>
@@ -64,7 +76,7 @@
                 <th>First Name</th><th>Last Name</th><th>School</th>
                 <th>Sets Played</th><th>Kills</th><th>Kills/Set</th>
                 <th>Assists/Set</th><th>Digs/Set</th><th>Blocks/Set</th>
-                <th>Points</th><th>Favorite</th>
+                <th>Points</th><th>Favorite</th><th>Status</th>
             </tr>
         </thead>
         <tbody>
@@ -83,7 +95,18 @@
                 <td>{{ row.career.points or 'N/A' }}</td>
                 <td>
                     <form method="POST" action="{{ url_for('toggle_favorite', pii_id=row.identifying.pii_id) }}">
-                        <button type="submit">{{ '★' if row.identifying.is_favorite else '☆' }}</button>
+                    <button type="submit" class="fav-btn {% if row.identifying.is_favorite %}favorited{% endif %}">{{ '★' if row.identifying.is_favorite else '☆' }}
+                    </button>
+                    </form>
+                </td>
+                <td onclick="event.stopPropagation()">
+                    <form method="POST" action="{{ url_for('update_status', pii_id=row.identifying.pii_id) }}">
+                        <select class="status-{{ row.identifying.contact_status }}" name="contact_status" onchange="this.form.submit()" onclick="event.stopPropagation()">
+                            <option value="0" {% if row.identifying.contact_status == 0 %}selected{% endif %}>Not Contacted</option>
+                            <option value="1" {% if row.identifying.contact_status == 1 %}selected{% endif %}>In Communication</option>
+                            <option value="2" {% if row.identifying.contact_status == 2 %}selected{% endif %}>Committed</option>
+                            <option value="3" {% if row.identifying.contact_status == 3 %}selected{% endif %}>Dropped</option>
+                        </select>
                     </form>
                 </td>
             </tr>
