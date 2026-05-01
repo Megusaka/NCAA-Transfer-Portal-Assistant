@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for
 import DatabaseConnection as db
 import FullInformationScraperHandler as ScrapeHandler
+import PlayerBiasStatistics as BiasStats
+import StatisticsThroughTime as TimeStats
 
 app = Flask(__name__)
 
@@ -69,8 +71,18 @@ def player_detail(pii_id):
 
     if not player:
         return redirect(url_for("index"))
+    
+    overview_chart = BiasStats.plot_player_radar_chart_b64(pii_id)
 
-    return render_template("player_detail.html", player=player, career=career_stats)
+    selected_trend_stat = request.args.get("trend_stat")
+    trend_chart = TimeStats.plot_stat_over_games_b64(TimeStats.get_all_games_for_pii_id_as_dataclass_array(pii_id), selected_trend_stat or "digs")
+
+    return render_template("player_detail.html",
+                            player=player,
+                            career=career_stats, 
+                            overview_chart=overview_chart,
+                            trend_chart=trend_chart
+                            )
 
 @app.route("/favorite/<int:pii_id>", methods=["POST"]) #update favorites
 def toggle_favorite(pii_id):

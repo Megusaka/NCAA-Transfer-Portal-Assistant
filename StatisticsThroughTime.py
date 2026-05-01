@@ -1,3 +1,6 @@
+import base64
+from io import BytesIO
+
 import matplotlib.pyplot as plt
 from dataclasses import dataclass
 from datetime import date
@@ -192,7 +195,7 @@ def get_all_games_for_pii_id_as_dataclass_array(pii_id: int) -> list[db.GameStat
     return games
 
 
-def plot_stat_over_games(games, stat_name):
+def plot_stat_over_games_b64(games, stat_name) -> str:
     stat_values = [getattr(game, stat_name) for game in games]
     avg_value = sum(stat_values) / len(stat_values) if stat_values else 0
 
@@ -215,8 +218,16 @@ def plot_stat_over_games(games, stat_name):
     plt.xticks(rotation=45)
     plt.grid()
     plt.legend()
+
     plt.tight_layout()
-    plt.show()
+
+    buf = BytesIO()
+    plt.savefig(buf, format='png', transparent=True)
+    plt.close()
+
+    buf.seek(0)
+    img_base64 = base64.b64encode(buf.read()).decode('utf-8')
+    return img_base64
 
 def trend_percentages(games, stat_name):
     increases = 0
@@ -264,9 +275,9 @@ def percent_of_games_played(games):
 # print(f"Games played: {a:.2f}%")
 # print(f"Games not played: {b:.2f}%")
 
-games = get_all_games_for_pii_id_as_dataclass_array(14)
+# games = get_all_games_for_pii_id_as_dataclass_array(14)
 
-plot_stat_over_games(games, 'kills')
+# plot_stat_over_games(games, 'kills')
 
 # for g in games:
 #     print(g.game_date, g.opponent, g.kills)

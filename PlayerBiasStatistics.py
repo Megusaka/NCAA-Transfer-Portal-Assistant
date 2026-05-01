@@ -1,7 +1,19 @@
+from io import BytesIO
+
 import DatabaseConnection as db
 import matplotlib.pyplot as plt
 import numpy as np
+import base64
 
+def get_player_name_by_pii_id(pii_id: int) -> str:
+    query = "SELECT first_name, last_name FROM player_identifying_information WHERE pii_id = ?"
+    result = db.execute_read(query, (pii_id,))
+    
+    if result:
+        first_name, last_name = result[0]
+        return f"{first_name} {last_name}"
+    else:
+        return "Unknown Player"
 
 def get_all_career_stats_as_dataclass_array() -> list[db.CareerStatistics]:
     query = "SELECT * FROM career_statistics"
@@ -90,45 +102,45 @@ def generate_cumulative_scores(pii_id: int) -> list[int]:
 
     return final_scores
 
-def plot_player_radar_chart(player_name: str, scores: list[int]):
+def plot_player_radar_chart_b64(pii_id: int) -> str:
     # 1. Define the categories
     categories = ['Attack', 'Set', 'Serve', 'Dig', 'Reception', 'Block']
-    num_categories = len(categories)
     
-    # 2. Calculate the angle for each category on the circle
-    # We divide a full circle (2 * pi) into 6 equal parts
-    angles = np.linspace(0, 2 * np.pi, num_categories, endpoint=False).tolist()
-    
-    # 3. "Close the loop" so the chart connects back to the start
-    scores = scores + [scores[0]]
+    angles = np.linspace(0, 2 * np.pi, len(categories), endpoint=False).tolist()
+    scores = generate_cumulative_scores(pii_id)
+
     angles = angles + [angles[0]]
+    scores = scores + [scores[0]]
     
-    # 4. Initialize the figure with a polar projection
     fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
     
-    # 5. Draw the outline and fill the inside
-    ax.plot(angles, scores, color='#1aaf6c', linewidth=2, linestyle='solid')
-    ax.fill(angles, scores, color='#1aaf6c', alpha=0.4) # alpha controls transparency
+    ax.plot(angles, scores, color="#000000", linewidth=2, linestyle='solid')
+    ax.fill(angles, scores, color="#dd880a", alpha=0.4)
     
-    # 6. Format the chart
-    # Fix axis to go in the right order and start at the top
     ax.set_theta_offset(np.pi / 2)
     ax.set_theta_direction(-1)
     
-    # Draw one axe per variable and add labels
     ax.set_xticks(angles[:-1])
     ax.set_xticklabels(categories, fontsize=12, fontweight='bold')
     
-    # Draw ylabels (the 1-100 rings)
     ax.set_yticks([20, 40, 60, 80, 100])
     ax.set_yticklabels(["20", "40", "60", "80", "100"], color="grey", size=10)
-    ax.set_ylim(0, 100) # Lock the scale to our 1-100 range
-    
-    # Add a title
-    plt.title(f"Player Profile: {player_name}", size=15, y=1.1)
-    
-    # Show the plot
-    plt.show()
+    ax.set_ylim(0, 100)
+
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
+    plt.tight_layout()
+
+    buf = BytesIO()
+    plt.savefig(buf, format='png', transparent=True)
+    plt.close(fig)
+
+    buf.seek(0)
+    img_base64 = base64.b64encode(buf.read()).decode('utf-8')
+    return img_base64
+    # player_name = get_player_name_by_pii_id(pii_id)
+    # plt.title(f"Player Profile: {player_name}", size=15, y=1.1)
+    # plt.show()
 
 
 # dummyClass = get_career_statistics_by_pii_id_as_dataclass(1)
@@ -147,5 +159,7 @@ def plot_player_radar_chart(player_name: str, scores: list[int]):
 # for score in normalizedScores:
 #     print(score)
 
-testScores = generate_cumulative_scores(1)
-plot_player_radar_chart("Test Player", testScores)
+# testScores = generate_cumulative_scores(1)
+# plot_player_radar_chart("Test Player", testScores)
+
+# plot_player_radar_chart(10)
