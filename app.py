@@ -62,15 +62,42 @@ def favorites():
 
 @app.route("/player/<int:pii_id>")  #detail view page, show graphs and game stats in future
 def player_detail(pii_id):
-
+ 
     players = db.get_all_player_data()
     player = next((p for p in players if p["pii_id"] == pii_id), None)
     career_stats = db.get_career_statistics_by_pii_id(pii_id)
-
+ 
     if not player:
         return redirect(url_for("index"))
-
-    return render_template("player_detail.html", player=player, career=career_stats)
+ 
+    #game log rows for this player
+    game_stats = db.get_game_statistics_by_pii_id(pii_id)
+ 
+    #reads which stat the trend dropdown has selected
+    selected_trend_stat = request.args.get("trend_stat", "kills_per_set")
+ 
+    #Attribute chart, currently accepts base64 png
+    overview_chart = None
+ 
+    #base64 png for stat over time
+    trend_chart = None
+ 
+    #dict here for rankings (keys: kills_per_set_rank, attack_pct_rank, aces_per_set_rank, digs_per_set_rank, blk_per_set_rank, points_rank, total)
+    player_ranks = None
+ 
+    #anything else just assign here and pass in the render temp
+ 
+    return render_template(
+        "player_detail.html",
+        player=player,
+        career=career_stats,
+        overview_chart=overview_chart,
+        trend_chart=trend_chart,
+        selected_trend_stat=selected_trend_stat,
+        player_ranks=player_ranks,
+        game_stats=game_stats,
+        # PARTNER — add your extra variables here as: variable_name=variable_name
+    )
 
 @app.route("/favorite/<int:pii_id>", methods=["POST"]) #update favorites
 def toggle_favorite(pii_id):

@@ -14,6 +14,7 @@ class PlayerIdentifyingInformation:
     height: str
     is_favorite: bool
     contact_status: int
+    notes: str
 
 @dataclass
 class CareerStatistics:
